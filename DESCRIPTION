@@ -1,0 +1,23 @@
+Package: NAPRMN
+Title: Coleção de funções para processamento de RMN e manipulação de dados
+Version: 0.1.2
+Authors@R: 
+    person("Edmilson", "Rodrigues", , "Edmilsonrrj@gmail.com", role = c("aut", "cre"))
+Description: Coleção de funções para processamento de RMN e manipulação de dados
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+biocViews:
+Imports: 
+    dplyr,
+    ggplot2,
+    magrittr,
+    PepsNMR,
+    plotly,
+    pracma,
+    preprocessCore,
+    RColorBrewer,
+    tidyr,
+    VennDiagram
