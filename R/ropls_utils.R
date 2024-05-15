@@ -26,7 +26,7 @@ extract_ropls_data <- function(ropls_object){
 
 
     #Extrai os escores e os valores de vip
-    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),2),
+    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),4),
                           op@loadingMN,
                           op@orthoLoadingMN,
                           "Vip"=round(as.numeric(op@vipVn),2),
@@ -46,7 +46,7 @@ extract_ropls_data <- function(ropls_object){
 
 
     #Extrai os escores e os valores de vip
-    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),2),
+    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),4),
                           op@loadingMN,
                           "Vip"=round(as.numeric(op@vipVn),2))
     loading_opls <- as.data.frame(loading_opls)
@@ -64,7 +64,7 @@ extract_ropls_data <- function(ropls_object){
 
 
     #Extrai os escores e os valores de vip
-    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),2),
+    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),4),
                           op@loadingMN)
     loading_opls <- as.data.frame(loading_opls)
 
