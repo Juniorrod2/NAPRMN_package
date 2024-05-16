@@ -97,7 +97,7 @@ extract_ropls_data <- function(ropls_object){
 #' @examples
 #' #model_data <- extract_ropls_data(model)
 #' #annotated_data <- annotate_bins(model_data$loadings)
-annotate_bins <- function(integrais,loadings,use_mean=T){
+annotate_bins <- function(integrais,loadings,use_mean=T,return_undentified=F){
   loading_opls <- loadings
   # Filtra apenas os bins referentes metabolitos identificados, juntamente com seu loading e vip no objeto "loading"
   loading <- data.frame()
@@ -114,12 +114,24 @@ annotate_bins <- function(integrais,loadings,use_mean=T){
 
   }
 
+  if(return_undentified==T){
+    use_mean=F
+
+    loading_undentified <- dplyr::filter(loading_opls,!bins%in%loading$bins)
+
+    loading_undentified$metabolite <- "undentified"
+
+    loading <- rbind(loading,loading_undentified)
+  }
+
   if(use_mean==T){
     #Gera as medias entre os todos bins para cada metabolito
     loading_opls <- dplyr::group_by(loading,metabolite)%>%dplyr::summarise_all(mean)
   }else{
     return(loading)
   }
+
+
 
 }
 
