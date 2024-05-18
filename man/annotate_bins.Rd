@@ -4,7 +4,7 @@
 \alias{annotate_bins}
 \title{Identifica os bins referentes a cada metabolito a partir de uma planilha de anotacao de metabolitos}
 \usage{
-annotate_bins(integrais, loadings, use_mean = T)
+annotate_bins(integrais, loadings, use_mean = T, return_undentified = F)
 }
 \arguments{
 \item{integrais}{Planilha de integrais, no mesmo formato utilizado para a funcao de integracao de regioes.}
