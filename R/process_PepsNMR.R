@@ -77,13 +77,47 @@ plot_interactive_Spectra <- function(Spectrum_data,plot_resolution=0.25,limit_n_
 
 
 
+#' Alinhamento espectral via metodo CluPA
+#' @description
+#' Aplica o metodo hierarchical Cluster-based Peak Alignment (CluPA) aos espectros, seguindo os parametros fonecidos pelo usuario.
+#' Esta funcao foi otimizada para funcionar a partir dos espectros processados com o pacote PepsNMR, podendo ter comportamentos
+#' diferentes do previsto se utilizada com dados de outras ferramentas.
+#' Para detalhes extras, ver a documentacao do pacote "speaq" onde o algoritmo usado aqui foi implementado originalmente.
+#'
+#' @param spectra
+#' Matriz de espectros gerada pelo PepsNMR, contendo os deslocamentos quimicos nas colunas e os espectros nas linhas.
+#' OBS: Não realizar a conversao usando a funcao "PepsMatrixtoDF()"
+#' @param nDivRange_ppm
+#' Tamanho de bin (em ppm) utilizado para a segmentacao do espectro durante o processo de identificacao dos picos.
+#' @param maxShifts_ppm
+#' Deslocamento maximo permitido (em ppm) durante o alinhamento para cada sinal identificado. Pode ser utilizado o valor "auto"
+#' para que o algoritmo determine automaticamente o deslocamento ideal.
+#' @param baselineThreshold
+#' Linha de corte de intesidade para a deteccao dos picos. Determinar com base na inspecao dos espectros.
+#' @param SNR.Th
+#' Razao sinal/Ruido considerada durante a deteccao dos picos. Pode receber o valor -1 onde o algoritmo determina automicaticamente a
+#' razao sinal/ruido
+#' @param show_info
+#' Recebe True/False. Configura se as mensagens de progresso devem ser mostradas durante o processo.
+#'
+#' @return
+#' Uma matriz no mesmo formato do dado de entrada (Porem contendo apenas a parte real do espectro) ja alinhada.
+#' @export
+#'
+#' @examples
+#' #aling_spec1 <- Spectra_align(spec)
 Spectra_align <- function(spectra,nDivRange_ppm=0.04,maxShifts_ppm=0.015,baselineThreshold=5E6,SNR.Th = -1,show_info=T){
 
   ppm_resolution <- abs(stats::median(diff(as.numeric(colnames(spectra)))))
 
   nDivRange <- round(nDivRange_ppm/ppm_resolution)
 
+  if(maxShifts_ppm=="auto"){
+    maxShifts <- NULL
+  }else{
   maxShifts <- round(maxShifts_ppm/ppm_resolution)
+  }
+
 
   spectra_real <- Re(spectra)
 
@@ -104,4 +138,45 @@ Spectra_align <- function(spectra,nDivRange_ppm=0.04,maxShifts_ppm=0.015,baselin
                   acceptLostPeak = TRUE, verbose=show_info)
 
   return(aligned_spectra)
+}
+
+
+#' Calcula a resolucao dos spectros
+#' @description
+#' Funcao auxiliar criada para calcular a resolucao da matriz de espectros fonecida.
+#'
+#'
+#' @param spectra
+#' Matriz no formato PepsNMR contendo os espectros.
+#' @param npoints
+#' Se utilizado, a funcao passa a retornar o comprimento equivalente em deslocamento quimico
+#' referente ao numero de pontos fornecido neste argumento. Para calcular apenas a resolucao, manter em NULL.
+#' @param ppm
+#' Se utilizado, a funcao passa a retornar o numero de pontos no espectro correspondente ao
+#' comprimento em ppm forncecido. Para calcular apenas a resolucao, manter em NULL.
+#'
+#' @return
+#' Um valor ou string informando a resolucao ou as conversoes entre ppm para numero de pontos e
+#' numero de pontos para ppm.
+#' @export
+#'
+#' @examples
+#' #calculate_spectrum_resolution(spec)
+#' #calculate_spectrum_resolution(spec,npoints = 128)
+#' #calculate_spectrum_resolution(spec,ppm=0.04)
+#'
+calculate_spectrum_resolution <- function(spectra,npoints=NULL,ppm=NULL){
+
+  ppm_resolution <- abs(stats::median(diff(as.numeric(colnames(spectra)))))
+
+  if(is.null(npoints)&&is.null(ppm)){
+    return(ppm_resolution)
+  }else{
+      if(is.null(ppm)){
+      return(cat(npoints,"points equals",(npoints*ppm_resolution),"ppm"))
+      }else{
+        return(cat(ppm,"ppm equals",(ppm/ppm_resolution),"points"))
+      }
+  }
+
 }
