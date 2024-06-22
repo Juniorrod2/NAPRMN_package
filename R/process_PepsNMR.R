@@ -74,3 +74,34 @@ plot_interactive_Spectra <- function(Spectrum_data,plot_resolution=0.25,limit_n_
     ggplot2::geom_line() + ggplot2::scale_x_reverse(breaks=seq(-0.5,12,0.1)) + ggplot2::labs(y="Intensity (Relative)",x="Chemical shift (ppm)",color="Sample identification")
   plotly::ggplotly(plt)
 }
+
+
+
+Spectra_align <- function(spectra,nDivRange_ppm=0.04,maxShifts_ppm=0.015,baselineThreshold=5E6,SNR.Th = -1,show_info=T){
+
+  ppm_resolution <- abs(stats::median(diff(as.numeric(colnames(spectra)))))
+
+  nDivRange <- round(nDivRange_ppm/ppm_resolution)
+
+  maxShifts <- round(maxShifts_ppm/ppm_resolution)
+
+  spectra_real <- Re(spectra)
+
+  peakList <- speaq::detectSpecPeaks(spectra_real,
+                              nDivRange = nDivRange,
+                              scales = seq(1, 16, 2),
+                              baselineThresh = baselineThreshold,
+                              SNR.Th = SNR.Th,
+                              verbose=show_info
+  );
+
+  refInd<- speaq::findRef(peakList)$refInd
+
+  aligned_spectra <- speaq::dohCluster(spectra_real,
+                  peakList = peakList,
+                  refInd = refInd,
+                  maxShift  = maxShifts,
+                  acceptLostPeak = TRUE, verbose=show_info)
+
+  return(aligned_spectra)
+}
