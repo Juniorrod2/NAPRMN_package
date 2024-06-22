@@ -19,10 +19,11 @@ e as coordenadas do bin medio. Se FALSE, todos os bins referentes ao mesmo sinal
 sao fornecidos individualmente duplicando a identificacao do metabolito quantas vezes forem necessarias.}
 }
 \value{
-Planilha contendo apenas os bins referentes as areas dos sinais identificados e suas devidas informacoes
+Planilha contendo apenas os bins referentes e os valores  areas dos sinais identificados e suas devidas informacoes
 }
 \description{
-Identifica os bins referentes a cada metabolito a partir de uma planilha de anotacao de metabolitos
+Extrai os loadings e realiza a media (Pode ser desabilitado) entre os bins
+correspondentes ao mesmo sinal/intervalo de integracao.
 }
 \examples{
 #model_data <- extract_ropls_data(model)

@@ -76,6 +76,10 @@ extract_ropls_data <- function(ropls_object){
 
 
 #' Identifica os bins referentes a cada metabolito a partir de uma planilha de anotacao de metabolitos
+#' @description
+#' Extrai os loadings e realiza a media (Pode ser desabilitado) entre os bins
+#' correspondentes ao mesmo sinal/intervalo de integracao.
+#'
 #'
 #' @param integrais
 #' Planilha de integrais, no mesmo formato utilizado para a funcao de integracao de regioes.
@@ -90,7 +94,7 @@ extract_ropls_data <- function(ropls_object){
 #' sao fornecidos individualmente duplicando a identificacao do metabolito quantas vezes forem necessarias.
 #'
 #' @return
-#' Planilha contendo apenas os bins referentes as areas dos sinais identificados e suas devidas informacoes
+#' Planilha contendo apenas os bins referentes e os valores  areas dos sinais identificados e suas devidas informacoes
 #'
 #' @export
 #'
