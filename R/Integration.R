@@ -28,6 +28,10 @@
 
 NMR_integration <- function(spectral_matrix,integration_intervals){
 
+  if(is.matrix(spectral_matrix)){
+    spectral_matrix <- pepsMatrixToDF(spectral_matrix)
+  }
+
   region <- integration_intervals
   integral <- spectral_matrix[1]
   full_data <- tidyr::gather(spectral_matrix,-1,key = "ppm",value = "int")
@@ -53,5 +57,53 @@ NMR_integration <- function(spectral_matrix,integration_intervals){
 
 
 
+#' Permite gerar uma matriz hibrida entre bins equidistantes e regioes de integracao personalizadas
+#' @description
+#' Esta funcao gera um hibrido entre um sistema de integrais definidas pelo usuario e bins classicos de larguras equidistantes
+#' Para todas as regioes que estiverm compreendidas no intevalo das integrais fonecidas, estas serao identificadas de acordo com
+#' o metabolito sinalizado no dataframe integrals, enquanto todas as demais regioes serao processadas com bins de largura definida
+#' no argumento bin_width. Para facilitar a leitura, todas as integrais sao movidas para o inicio da matriz, alem disso, as regioes
+#' integradas sao removidas dos bins equidistantes para evitar duplicatas de variaveis.
+#'
+#' @param spectra
+#' Matrix contendo os espectros processados de acordo com o pacote PepsNMR.
+#' @param integrals
+#' Dataframe derivado da planilha contendo as regioes de integracao. Utilizar o mesmo modelo exigido para a funcao
+#' NMR_integration()
+#' @param bin_width
+#' Largura de bin aplicada para as regioes nao inclusas nas regioes determinadas no dataframe "integrals"
+#'
+#' @return
+#' Um dataframe contendo as integrais e bins gerados.
+#' @export
+#'
+#' @examples
+#' #NMR_hbins <- hibrid_bucketing(spectra = spec,integrals = regioes_integrais,bin_width = 0.01)
+hibrid_bucketing <- function(spectra,integrals,bin_width=0.01){
+  if(is.matrix(spectra)){
+  real_spectra <- pepsMatrixToDF(spectra)
+  }else{
+    real_spectra <- spectra
+  }
+
+
+  integrated_signals <- NMR_integration(real_spectra,integrals)
+
+  integrated_regions <- list()
+  for(i in 1:dim(regioes_integrais)[1]){
+    integrated_regions[[i]] <- c(regioes_integrais[[i,2]],regioes_integrais[[i,3]])
+  }
+  names(integrated_regions) <- regioes_integrais[[1]]
+
+  unintegrated_spectra <- PepsNMR::RegionRemoval(spec,fromto.rr = integrated_regions,
+                                        typeofspectra = "manual")
+
+  unintegrated_spectra <- PepsNMR::Bucketing(unintegrated_spectra,width = T,mb=bin_width,intmeth = "t")
+  unintegrated_spectra <- pepsMatrixToDF(unintegrated_spectra)
+
+  unintegrated_spectra <- CleanDataMatrix(as.matrix(unintegrated_spectra[-1]))
+
+  hibrid_binning_data <- cbind(integrated_signals,unintegrated_spectra)
+}
 
 
