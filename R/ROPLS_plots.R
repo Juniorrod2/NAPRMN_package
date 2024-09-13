@@ -1,6 +1,4 @@
 
-OPLS_test <- readRDS("C:/Users/igorj/Downloads/OPLS_test")
-
 
 plot_ropls_scores <- function(ropls_object){
 
