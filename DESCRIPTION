@@ -20,4 +20,5 @@ Imports:
     preprocessCore,
     RColorBrewer,
     tidyr,
-    VennDiagram
+    VennDiagram,
+    speaq
