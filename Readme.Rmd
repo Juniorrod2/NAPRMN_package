@@ -1,16 +1,27 @@
 ---
-title: "Readme"
-author: "Núcleo de Análises e Pesquisa em Ressonância Magnética Nuclear"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
 ```
+
+# NAPRMN
+
+<!-- badges: start -->
+<!-- badges: end -->
+
 ## Introdução
 Esta ferramenta foi desenvolvida para agrupar um conjunto de funções auxiliares para processamento e analise de dados de RMN para metabolômica. Este pacote funciona como complemento para outras ferramentas já estabelecidas, sendo elas: 
-
-- ***PepsNMR***: Adciona uma função atualizada para visualização dos espectros, permitindo a visualização interativa com o auxilio do pacote plotly, além de implementar funções auxiliares para alinhamento dos espectros utilizando o algoritmo CLUPA (spectra_aling()) com base na implementação do pacote speaq e funções para integração manual dos sinais;
+  
+  - ***PepsNMR***: Adciona uma função atualizada para visualização dos espectros, permitindo a visualização interativa com o auxilio do pacote plotly, além de implementar funções auxiliares para alinhamento dos espectros utilizando o algoritmo CLUPA (spectra_aling()) com base na implementação do pacote speaq e funções para integração manual dos sinais;
 - ***ROPLS***: Implementa funcionalidades para facilitar a extração dos dados dos modelos no formato de dataframe, facilitando a plotagem dos resultados em gráficos personalizados; 
 - Implementa funções de normalização, escalonamento e transfomação de dados com base nas funções implementadas no pacote MetaboanalystR.
 
@@ -28,4 +39,23 @@ if (!require("remotes", quietly = TRUE)){
 BiocManager::install("Juniorrod2/NAPRMN_package")
 
 ```
+
+
+## Example (Em construção)
+
+This is a basic example which shows you how to solve a common problem:
+
+```{r example}
+library(NAPRMN)
+## basic example code
+```
+
+What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+
+```{r cars}
+summary(cars)
+```
+
+You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+
 

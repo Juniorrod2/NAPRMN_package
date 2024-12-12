@@ -19,20 +19,20 @@ DataNormalization(
 Esta função suporta apenas objetos do tipo matrix. Portanto as variaveis categoricas devem ser removidas antes da normalização}
 
 \item{rowNorm}{Define a normalização:
-Quantile: "QuantileNorm"; PQN: "SamplePQN"; PQN por grupo: "GroupPQN"; Norm. p/ metabolito de referencia: "CompNorm"; soma: "SumNorm"; Mediana: "MedianNorm"
+Quantile: "Quantile"; PQN: "PQN"; PQN por grupo: "GroupPQN"; Norm. p/ metabolito de referencia: "CompNorm"; soma: "Sum"; Mediana: "Median"
 Não definir para não normalizar}
 
 \item{transNorm}{Define transformação logaritimica/exponencial:
-log: "LogNorm"
-sqrt root: "SrNorm"
-cubic root: "CrNorm"
+log: "Log"
+sqrt root: "Square_root"
+cubic root: "Cubic_root"
 Não definir para não aplicar transformação}
 
 \item{scaleNorm}{Define o escalonamento
-Mean centering only: "MeanCenter"
-Unit Variance: "AutoNorm"
-Pareto scaling: "ParetoNorm"
-Range scaling: "RangeNorm"
+Mean centering only: "Mean_center"
+Unit Variance: "Unit"
+Pareto scaling: "Pareto"
+Range scaling: "Range"
 Não definir para não aplicar escalonamento}
 
 \item{ref}{Define o espectro ou metabolito de referencia, necessário apenas se aplicados os metodos SamplePQN, GroupPQN ou CompNorm}

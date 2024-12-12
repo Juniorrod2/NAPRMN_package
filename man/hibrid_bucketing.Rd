@@ -4,10 +4,10 @@
 \alias{hibrid_bucketing}
 \title{Permite gerar uma matriz hibrida entre bins equidistantes e regioes de integracao personalizadas}
 \usage{
-hibrid_bucketing(spectra, integrals, bin_width = 0.01)
+hibrid_bucketing(Spectrum_data, integrals, bin_width = 0.01)
 }
 \arguments{
-\item{spectra}{Matrix contendo os espectros processados de acordo com o pacote PepsNMR.}
+\item{Spectrum_data}{Matrix contendo os espectros processados de acordo com o pacote PepsNMR.}
 
 \item{integrals}{Dataframe derivado da planilha contendo as regioes de integracao. Utilizar o mesmo modelo exigido para a funcao
 NMR_integration()}

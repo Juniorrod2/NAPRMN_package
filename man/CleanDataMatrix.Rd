@@ -4,10 +4,10 @@
 \alias{CleanDataMatrix}
 \title{Executa a remocao de valores constantes e invalidos (NA) nas matrizes de preprocessamento ou dados para estatisitica}
 \usage{
-CleanDataMatrix(ndata)
+CleanDataMatrix(data)
 }
 \arguments{
-\item{ndata}{Recebe uma matriz do tipo numerica a ser "limpa". A planilha deve conter apenas as variaveis a serem
+\item{data}{Recebe uma matriz do tipo numerica a ser "limpa". A planilha deve conter apenas as variaveis a serem
 filtradas, nao contendo nenhum metadado ou variavel do tipo categorica/Factor/Character.}
 }
 \value{

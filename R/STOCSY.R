@@ -35,7 +35,7 @@ stocsy_by_region <- function(spectra,driver_peak,mode="cor",spectrum_resolution=
   region <- data.frame("signal"="Drive","ppm_1"=driver_peak[1],"ppm_f"=driver_peak[2])
 
   Spectrum <- PepsNMR::Bucketing(spectra,width = F,mb =n_plot_points,intmeth = "t")
-  Spectrum <- NAPRMN::pepsMatrixToDF(Spectrum)
+  Spectrum <- NAPRMN::NMRMatrixAsDataframe(Spectrum)
   integrated_driver <- NAPRMN::NMR_integration(Spectrum,region)
 
   cor <- cor(integrated_driver$Drive,Spectrum[-1])
@@ -98,7 +98,7 @@ stocsy_by_region <- function(spectra,driver_peak,mode="cor",spectrum_resolution=
 #' #stocsy(spec,driver_peak = 0.945,mode = "cov")
 stocsy <- function (spectra, driver_peak, mode = "cor",ref_spectrum = 1){
 
-  Spectrum <- NAPRMN::pepsMatrixToDF(spectra)
+  Spectrum <- NAPRMN::NMRMatrixAsDataframe(spectra)
   ppm_range <- as.numeric(colnames(Spectrum[-1]))
 
   driver <- which.min(abs(ppm_range - driver_peak))
