@@ -4,10 +4,10 @@
 \alias{NMR_integration}
 \title{Calcula as integrais a partir de uma planilha processada de espectros de RMN, recomendada para uso com dados processados pelo pacote PepsNMR}
 \usage{
-NMR_integration(spectral_matrix, integration_intervals)
+NMR_integration(Spectrum_data, integration_intervals)
 }
 \arguments{
-\item{spectral_matrix}{Dataframe gerado do processamento dos dados espectrais, contendo a identificação das amostras na primeira coluna e
+\item{Spectrum_data}{Dataframe gerado do processamento dos dados espectrais, contendo a identificação das amostras na primeira coluna e
 as intensidades dos deslocamentos químicos nas demais.}
 
 \item{integration_intervals}{Dataframe formatado a partir do Excel (preferencialmente), contendo a identificação dos metabolitos, inicio do intervalo para integração

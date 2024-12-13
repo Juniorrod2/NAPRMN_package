@@ -7,8 +7,9 @@
 plot_interactive_Spectra(
   Spectrum_data,
   plot_resolution = 0.25,
-  limit_n_points = T,
-  plot_only = 0
+  limit_n_points = F,
+  plot_only = 0,
+  Spectrum_window = NULL
 )
 }
 \arguments{

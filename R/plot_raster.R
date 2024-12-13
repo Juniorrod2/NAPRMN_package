@@ -28,7 +28,7 @@ plot_raster_spectrum <- function(spec_data,plot_region=c(0,9),spec_resolution=0.
                                                               mb=round(dim(spec_data)[2]*spec_resolution))}else{
                                                                 lower_res_data <- spec_data
                                                               }
-  spec <- NAPRMN::pepsMatrixToDF(lower_res_data)
+  spec <- NAPRMN::NMRMatrixAsDataframe(lower_res_data)
   spec <- spec[complete.cases(spec),]
   spec <- tidyr::gather(spec,-Sample,key="ppm",value="intensity")
   spec$ppm <- as.numeric(spec$ppm)

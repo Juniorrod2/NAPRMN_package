@@ -6,7 +6,7 @@
 #' formatado de maneira adequada para salvar a planilha ou ser utilizado em outras funções. Além disso, também faz a correção da ordem
 #' alfabetica nos nomes das amostras.
 #'
-#' @param Pepsmatrix
+#' @param NMR_matrix
 #' Matrix gerada por alguma das etapas de processamento do PepsNMR
 #' @param DirNames
 #' Boleano, indicando se o nome das amostras equivale ao numero do experimento. Se verdadeiro (TRUE) realiza a correção
@@ -16,9 +16,9 @@
 #' @export
 #'
 #' @examples \dontrun{NMR_dataproc <- pepsMatrixToDF(Spectrum_data.N)}
-pepsMatrixToDF <- function(Pepsmatrix,DirNames=F){
+NMRMatrixAsDataframe <- function(NMR_matrix,DirNames=F){
 
-  Df_real <- as.data.frame(Re(Pepsmatrix))
+  Df_real <- as.data.frame(Re(NMR_matrix))
   Df_real <- cbind("Sample"=rownames(Df_real),Df_real)
 
   if(DirNames==T){
@@ -51,28 +51,37 @@ pepsMatrixToDF <- function(Pepsmatrix,DirNames=F){
 #' @export
 #' @importFrom magrittr `%>%`
 #' @examples \dontrun{Plot_NMR <- plot_interactive_Spectra(Bins_data)}
-plot_interactive_Spectra <- function(Spectrum_data,plot_resolution=0.25,limit_n_points=T,plot_only=0){
+plot_interactive_Spectra <- function(Spectrum_data,plot_resolution=0.25,limit_n_points=F,plot_only=0,Spectrum_window=NULL){
 
-  if(length(plot_only)==1&&plot_only==0){
-    plot_only <- 1:dim(Spectrum_data)[1]
+#Caso apenas um espectro seja plotado, ele sera duplicado para evitar a coercao da matrix em vetor
+  if(length(plot_only)==1&&plot_only!=0){
+    plot_only <- c(plot_only,plot_only)
   }
 
-  if(length(plot_only)==1&&plot_only!=0){
-    plot_only <- plot_only:(1+plot_only)
+#Por padrão apenas 10 espectros seram plotados, exceto se o usuario especificar a quantidade a ser plotada
+  if(length(plot_only)==1&&plot_only==0){
+    if(nrow(Spectrum_data)>10){
+      plot_only=1:10
+    }else plot_only=nrow(Spectrum_data)
+  }
+
+  if(!is.null(Spectrum_window)){
+    Spectrum_data <- PepsNMR::WindowSelection(Spectrum_data,from.ws = Spectrum_window[1],to.ws = Spectrum_window[2])
   }
 
   n_data_points <- round(dim(Spectrum_data)[2]*plot_resolution)
 
   if(limit_n_points==F&&is.matrix(Spectrum_data)){
-    Spectrum_data <- pepsMatrixToDF(Spectrum_data[plot_only,])
+    Spectrum_data <- NMRMatrixAsDataframe(Spectrum_data[plot_only,])
   }
   if(limit_n_points==T&&is.matrix(Spectrum_data)){
-    Spectrum_data<- PepsNMR::Bucketing(Spectrum_data[plot_only,],width = F,mb = n_data_points)%>%pepsMatrixToDF()
+    Spectrum_data<- PepsNMR::Bucketing(Spectrum_data[plot_only,],width = F,mb = n_data_points)%>%NMRMatrixAsDataframe()
   }
 
-  plt <- tidyr::gather(Spectrum_data,-Sample,value = "Values",key = "int")%>%ggplot2::ggplot(ggplot2::aes(as.numeric(int),Values,color=as.character(Sample),group=Sample))+
-    ggplot2::geom_line() + ggplot2::scale_x_reverse(breaks=seq(-0.5,12,0.1)) + ggplot2::labs(y="Intensity (Relative)",x="Chemical shift (ppm)",color="Sample identification")
-  plotly::ggplotly(plt)
+  plt <- tidyr::gather(Spectrum_data,-Sample,value = "Intensity",key = "ppm")%>%ggplot2::ggplot(ggplot2::aes(as.numeric(ppm),Intensity,color=as.character(Sample),group=Sample))+
+    ggplot2::geom_line(aes(text=paste("Chemical Shift:",round(as.numeric(ppm),6)))) + ggplot2::scale_x_reverse(breaks=seq(-0.5,12,0.1)) + ggplot2::labs(y="Intensity (Relative)",x="Chemical shift (ppm)",color="Sample identification")
+  plotly::ggplotly(plt,tooltip = c("text","y","group"))
+
 }
 
 

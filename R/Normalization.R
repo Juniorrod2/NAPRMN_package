@@ -71,19 +71,19 @@ RangeNorm<-function(x){
 #' @param data Matriz contendo os valores das variáveis no formato, amostras nas linhas.
 #' Esta função suporta apenas objetos do tipo matrix. Portanto as variaveis categoricas devem ser removidas antes da normalização
 #' @param rowNorm Define a normalização:
-#' Quantile: "QuantileNorm"; PQN: "SamplePQN"; PQN por grupo: "GroupPQN"; Norm. p/ metabolito de referencia: "CompNorm"; soma: "SumNorm"; Mediana: "MedianNorm"
+#' Quantile: "Quantile"; PQN: "PQN"; PQN por grupo: "GroupPQN"; Norm. p/ metabolito de referencia: "CompNorm"; soma: "Sum"; Mediana: "Median"
 #' Não definir para não normalizar
 #' @param transNorm Define transformação logaritimica/exponencial:
-#' log: "LogNorm"
-#' sqrt root: "SrNorm"
-#' cubic root: "CrNorm"
+#' log: "Log"
+#' sqrt root: "Square_root"
+#' cubic root: "Cubic_root"
 #' Não definir para não aplicar transformação
 #'
 #' @param scaleNorm Define o escalonamento
-#' Mean centering only: "MeanCenter"
-#' Unit Variance: "AutoNorm"
-#' Pareto scaling: "ParetoNorm"
-#' Range scaling: "RangeNorm"
+#' Mean centering only: "Mean_center"
+#' Unit Variance: "Unit"
+#' Pareto scaling: "Pareto"
+#' Range scaling: "Range"
 #' Não definir para não aplicar escalonamento
 #'
 #'
@@ -105,7 +105,7 @@ DataNormalization <- function(data, rowNorm="", transNorm="", scaleNorm="", ref=
   rowNames <- rownames(data);
 
   # row-wise normalization
-  if(rowNorm=="QuantileNorm"){
+  if(rowNorm=="Quantile"){
     data<-QuantileNormalize(data);
     # this can introduce constant variables if a variable is
     # at the same rank across all samples (replaced by its average across all)
@@ -132,10 +132,10 @@ DataNormalization <- function(data, rowNorm="", transNorm="", scaleNorm="", ref=
   }else if(rowNorm=="CompNorm"){
     data<-t(apply(data, 1, CompNorm, ref));
     rownm<-"Normalization by a reference feature";
-  }else if(rowNorm=="SumNorm"){
+  }else if(rowNorm=="Sum"){
     data<-t(apply(data, 1, SumNorm));
     rownm<-"Normalization to constant sum";
-  }else if(rowNorm=="MedianNorm"){
+  }else if(rowNorm=="Median"){
     data<-t(apply(data, 1, MedianNorm));
     rownm<-"Normalization to sample median";
   }else if(rowNorm=="SpecNorm"){
@@ -147,7 +147,7 @@ DataNormalization <- function(data, rowNorm="", transNorm="", scaleNorm="", ref=
     data<-data/norm.vec;
   }else{
     # nothing to do
-    rownm<-"N/A";
+    rownm<-"Unormalized";
   }
 
   # use apply will lose dimension info (i.e. row names and colnames)
@@ -167,40 +167,40 @@ DataNormalization <- function(data, rowNorm="", transNorm="", scaleNorm="", ref=
 
   # transformation
   # may not be able to deal with 0 or negative values
-  if(transNorm=='LogNorm'){
+  if(transNorm=='Log'){
     min.val <- min(abs(data[data!=0]))/10;
     data<-apply(data, 2, LogNorm, min.val);
-    transnm<-"Log10 Normalization";
-  }else if(transNorm=='SrNorm'){
+    transnm<-"Log10";
+  }else if(transNorm=='Square_root'){
     min.val <- min(abs(data[data!=0]))/10;
     data<-apply(data, 2, SquareRootNorm, min.val);
-    transnm<-"Square Root Transformation";
-  }else if(transNorm=='CrNorm'){
+    transnm<-"Square Root";
+  }else if(transNorm=='Cubic_root'){
     norm.data <- abs(data)^(1/3);
     norm.data[data<0] <- - norm.data[data<0];
     data <- norm.data;
-    transnm<-"Cubic Root Transformation";
+    transnm<-"Cubic Root";
   }else{
     transnm<-"N/A";
   }
 
 
-  if(scaleNorm=='MeanCenter'){
+  if(scaleNorm=='Mean_center'){
     data<-apply(data, 2, MeanCenter);
     scalenm<-"Mean Centering";
-  }else if(scaleNorm=='AutoNorm'){
+  }else if(scaleNorm=='Autoscaling'){
     data<-apply(data, 2, AutoNorm);
     scalenm<-"Autoscaling";
-  }else if(scaleNorm=='ParetoNorm'){
+  }else if(scaleNorm=='Pareto'){
     data<-apply(data, 2, ParetoNorm);
-    scalenm<-"Pareto Scaling";
-  }else if(scaleNorm=='RangeNorm'){
+    scalenm<-"Pareto";
+  }else if(scaleNorm=='Range'){
     data<-apply(data, 2, RangeNorm);
-    scalenm<-"Range Scaling";
+    scalenm<-"Range";
   }else{
     scalenm<-"N/A";
   }
-
+  cat("Data was normalized by:",rownm,"|",transnm,"transformation","|","and",scalenm,"scaling",sep = " ")
   return(data)
 }
 
