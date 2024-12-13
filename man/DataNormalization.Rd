@@ -30,7 +30,7 @@ Não definir para não aplicar transformação}
 
 \item{scaleNorm}{Define o escalonamento
 Mean centering only: "Mean_center"
-Unit Variance: "Unit"
+Unit Variance/Autoscaling: "Autoscaling"
 Pareto scaling: "Pareto"
 Range scaling: "Range"
 Não definir para não aplicar escalonamento}
