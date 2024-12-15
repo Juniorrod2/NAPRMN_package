@@ -17,7 +17,7 @@
 #' #model_data <- extract_ropls_data(model)
 extract_ropls_data <- function(ropls_object){
 
-  if(ropls_object@typeC=="OPLS-DA"){
+  if(ropls_object@typeC=="OPLS-DA"||ropls_object@typeC=="OPLS"){
     op <- ropls_object
     #Extrai os scores e reinsere a identificacao das amostras e grupos
     scores_opls <- cbind(op@scoreMN,op@orthoScoreMN)
@@ -37,7 +37,7 @@ extract_ropls_data <- function(ropls_object){
     return(extracted_data)
   }
 
-  if(ropls_object@typeC=="PLS-DA"){
+  if(ropls_object@typeC=="PLS-DA"||ropls_object@typeC=="PLS"){
     op <- ropls_object
     #Extrai os scores e reinsere a identificacao das amostras e grupos
     scores_opls <- cbind(op@scoreMN)
