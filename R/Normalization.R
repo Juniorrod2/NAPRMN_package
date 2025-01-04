@@ -81,7 +81,7 @@ RangeNorm<-function(x){
 #'
 #' @param scaleNorm Define o escalonamento
 #' Mean centering only: "Mean_center"
-#' Unit Variance: "Unit"
+#' Unit Variance/autoscaling: "Autoscaling"
 #' Pareto scaling: "Pareto"
 #' Range scaling: "Range"
 #' Não definir para não aplicar escalonamento

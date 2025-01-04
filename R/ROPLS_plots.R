@@ -59,7 +59,36 @@ Plot_ropls_scores <- function(model,groups=vector(),comp=c(1,2),group_colors=NUL
 }
 
 
-Plot_scores <- function(model,groups=NULL,comp=c(1,2),point_size=2,ellipse=T,labels=T,font.label=c(12,"plain"),point=T,repel_labels=F,theme=ggpubr::theme_pubr(),...){
+#' Title
+#'
+#' @param model Lista contendo um modelo de PCA, PLS-DA, OPLS-DA, PLS, ou OPLS gerado a partir
+#' do pacote ROPLS.
+#' @param groups Utilizado em modelos de PCA, recebe um vetor de grupos utilizado para colorir e
+#' identificar as amostras em diferentes grupos. Nos modelos supervisionados os grupos são definidos
+#' pelo proprio modelo.
+#' @param comp Vetor de tamanho 2 especificando as componentes a serem representadas no grafico. Por
+#' padrão as componentes 1 e 2 serão mostradas.
+#' @param point_size Tamanho dos pontos na representação. (Booleano)
+#' @param ellipse Booleano utilizado para definir se a elipse do intervalo de confiânça deverá
+#' ser mostrada ou não.
+#' @param labels  booleano controlando se o nome das amostras deve ser presentado ou não.Também pode
+#' receber diretamente um vetor de nomes para as amostras, substituindo os nomes das amostras fornecidos pelo modelo
+#' @param font.label Recebe um vetor contendo o tamanho de fonte, cor de fonte e tipo de fonte usada
+#' nos nomes das amostras. Para mais detalhes ver documentação do argumento de mesmo nome na função
+#' ggscatter do pacote ggpubr.
+#' @param point Booleano definindo se devem ser representados pontos para cada amostra.
+#' @param repel_labels Utilizado caso as amostras possuam rotulos em sobreposição, tenta reorganizar as
+#' posições dos rotulos para permitir a visualização de todos.
+#' @param theme Controla o tema do grafico, pode ser utilizado qualquer um dos temas do ggplot2.
+#' @description
+#' Fornece opções para plotar os graficos de scores dos modelos gerados pelo pacote ROPLS com opções
+#' mais avançadas de personalização baseadas no ggplot2.
+#'
+#' @return
+#' Um grafico do ggplot2 contendo os scores do modelo em questão.
+#' @export
+#'
+Plot_scores <- function(model,groups=NULL,comp=c(1,2),point_size=2,ellipse=T,labels=T,font.label=c(12,"plain"),point=T,repel_labels=F,theme=ggpubr::theme_pubr()){
 
   if(model@typeC=="PCA"){
 
