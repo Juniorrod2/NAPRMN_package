@@ -2,6 +2,8 @@
 #'
 #' @param ropls_object
 #' Objeto da classe opls gerado pelo pacote ropls. Pode ser de qualquer um dos tipos: PCA, PLS-DA ou OPLS-DA.
+#' @param bins_roundPrecision  Numero de casas decimais permitidas na representação dos bins
+#' @param VIP_roundPrecision  Numero de casas decimais permitidas na representação dos valores de VIP
 #' @description
 #' Extrai em um objeto os scores e loadings de um modelo de PCA, PLS-DA ou OPLS-DA gerados pelo
 #' pacote ropls. A deteccao do tipo de modelo e executada automaticamente necessitando apenas fornecer
@@ -15,7 +17,7 @@
 #' @examples
 #' #model <- opls(xdada,yvector, predI = 1, orthoI = 1)
 #' #model_data <- extract_ropls_data(model)
-extract_ropls_data <- function(ropls_object){
+extract_ropls_data <- function(ropls_object,bins_roundPrecision=4,VIP_roundPrecision=2){
 
   if(ropls_object@typeC=="OPLS-DA"||ropls_object@typeC=="OPLS"){
     op <- ropls_object
@@ -26,11 +28,11 @@ extract_ropls_data <- function(ropls_object){
 
 
     #Extrai os escores e os valores de vip
-    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),4),
+    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),bins_roundPrecision),
                           op@loadingMN,
                           op@orthoLoadingMN,
-                          "Vip"=round(as.numeric(op@vipVn),2),
-                          "OrthoVip"=round(as.numeric(op@orthoVipVn),2))
+                          "Vip"=round(as.numeric(op@vipVn),VIP_roundPrecision),
+                          "OrthoVip"=round(as.numeric(op@orthoVipVn),VIP_roundPrecision))
     loading_opls <- as.data.frame(loading_opls)
 
     extracted_data <- list("Scores"=scores_opls,"Loadings"=loading_opls)
@@ -46,9 +48,9 @@ extract_ropls_data <- function(ropls_object){
 
 
     #Extrai os escores e os valores de vip
-    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),4),
+    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),bins_roundPrecision),
                           op@loadingMN,
-                          "Vip"=round(as.numeric(op@vipVn),2))
+                          "Vip"=round(as.numeric(op@vipVn),VIP_roundPrecision))
     loading_opls <- as.data.frame(loading_opls)
 
     extracted_data <- list("Scores"=scores_opls,"Loadings"=loading_opls)
@@ -64,7 +66,7 @@ extract_ropls_data <- function(ropls_object){
 
 
     #Extrai os escores e os valores de vip
-    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),4),
+    loading_opls <- cbind("bins"=round(as.numeric(rownames(op@loadingMN)),bins_roundPrecision),
                           op@loadingMN)
     loading_opls <- as.data.frame(loading_opls)
 

@@ -59,7 +59,7 @@ Plot_ropls_scores <- function(model,groups=vector(),comp=c(1,2),group_colors=NUL
 }
 
 
-#' Title
+#' Plota grafico de scores a partir dos modelos gerados pelo ROPLS
 #'
 #' @param model Lista contendo um modelo de PCA, PLS-DA, OPLS-DA, PLS, ou OPLS gerado a partir
 #' do pacote ROPLS.
@@ -88,7 +88,7 @@ Plot_ropls_scores <- function(model,groups=vector(),comp=c(1,2),group_colors=NUL
 #' Um grafico do ggplot2 contendo os scores do modelo em questão.
 #' @export
 #'
-Plot_scores <- function(model,groups=NULL,comp=c(1,2),point_size=2,ellipse=T,labels=T,font.label=c(12,"plain"),point=T,repel_labels=F,theme=ggpubr::theme_pubr()){
+Plot_scores <- function(model,groups=NULL,comp=c(1,2),point_size=2,ellipse=T,labels=T,font.label=c(12,"plain"),point=T,repel_labels=F,theme=NULL){
 
   if(model@typeC=="PCA"){
 
@@ -215,18 +215,100 @@ Plot_scores <- function(model,groups=NULL,comp=c(1,2),point_size=2,ellipse=T,lab
                                      y= if(comp[2]==1) paste("p",comp[2],sep = "") else paste("o",comp[2]-1,sep = ""),
                                      color=col_group,
                                     size = point_size,label = plot_label,point = point,
-                                   font.label = font.label,repel = repel_labels,show.legend.text = legend.text)+
-     ggplot2::stat_ellipse(ggplot2::aes(color=if(ellipse==T) eval(Group),fill=if(ellipse==T) eval(Group)),geom = "polygon",
-                           alpha=group_alpha,show.legend = F)+
-      ggplot2::labs(x=paste(if(comp[1]==1) paste("Pred. Comp") else paste("Ortho. Comp"),comp[1]," (",model@modelDF$R2X[comp[1]]*100,"%)"),
-           y=paste(if(comp[2]==1) paste("Pred. Comp") else paste("Ortho. Comp"),comp[2]," (",model@modelDF$R2X[comp[2]]*100,"%)"),
-           title = model@typeC)+
-      ggplot2::theme_bw()+ggplot2::theme(legend.text = ggplot2::element_text(size = 14),
-                       axis.text = ggplot2::element_text(size=14),
-                       axis.title = ggplot2::element_text(size = 14),
-                       legend.position = "bottom")
+                                    font.label = font.label,repel = repel_labels,show.legend.text = legend.text)+
+                  ggplot2::stat_ellipse(ggplot2::aes(color=if(ellipse==T) eval(Group),fill=if(ellipse==T) eval(Group)),geom = "polygon",
+                                                      alpha=group_alpha,show.legend = F)+
+                  ggplot2::labs(x=paste(if(comp[1]==1) paste("Pred. Comp") else paste("Ortho. Comp"),comp[1]," (",model@modelDF$R2X[comp[1]]*100,"%)"),
+                                y=paste(if(comp[2]==1) paste("Pred. Comp") else paste("Ortho. Comp"),comp[2]," (",model@modelDF$R2X[comp[2]]*100,"%)"),
+                                title = model@typeC)+
+                  ggplot2::theme_bw()+ggplot2::theme(legend.text = ggplot2::element_text(size = 14),
+                                                      axis.text = ggplot2::element_text(size=14),
+                                                      axis.title = ggplot2::element_text(size = 14),
+                                                      legend.position = "bottom")
 
   }
 
   return(scores_plot+theme)
 }
+
+
+
+
+
+
+
+
+Plot_loading <- function(model,comp=c(1,2),point = T,repel = F,font.label = c(12,"plain"),
+                         bin_identification=NULL,bins_roundPrecision=4,VIP_roundPrecision=2,show_metabolite_name=T,
+                         VIP_values_scale=NULL,theme=NULL){
+
+  model_data <- extract_ropls_data(model,bins_roundPrecision = bins_roundPrecision,VIP_roundPrecision = VIP_roundPrecision)
+
+  label <- "bins"
+
+  if(!is.null(bin_identification)){
+
+    identified_bins <- dplyr::filter(model_data$Loadings,bins%in%bin_identification[[2]])
+    bins_name <- colnames(bin_identification)[[2]]
+    identified_bins <- dplyr::left_join(identified_bins,bin_identification,by=c("bins"=bins_name))
+    model_data$Loadings <- identified_bins
+
+    if (show_metabolite_name==T) label <- colnames(bin_identification)[[1]]
+    }
+
+
+  if(model@typeC=="PCA"){
+
+    PCA_data <- model_data
+
+    loading_plot <- ggpubr::ggscatter(PCA_data$Loadings,
+                                      x=paste("p",comp[1],sep = ""),
+                                      y=paste("p",comp[2],sep = ""),
+                                      size = 2,label = label,point=point,
+                      repel = repel,font.label = font.label)+
+      ggplot2::labs(x=paste("PC",comp[1]," (",model@modelDF$R2X[comp[1]]*100,"%)"),
+                    y=paste("PC",comp[2]," (",model@modelDF$R2X[comp[2]]*100,"%)"),
+                    title = model@typeC)+
+      ggplot2::theme_bw()
+  }
+
+
+  if(model@typeC=="PLS-DA"||model@typeC=="PLS"){
+
+    PLS_data <- model_data
+
+    loading_plot <- ggpubr::ggscatter(PLS_data$Loadings,
+                                      x=paste("p",comp[1],sep = ""),
+                                      y=paste("p",comp[2],sep = ""),
+                                      size = 2,label = label,point=point,
+                                      repel = repel,font.label = font.label,color="Vip")+
+                    ggplot2::labs(x=paste("Comp",comp[1]," (",model@modelDF$R2X[comp[1]]*100,"%)"),
+                                  y=paste("Comp",comp[2]," (",model@modelDF$R2X[comp[2]]*100,"%)"),
+                                  title = model@typeC)+
+                    ggplot2::scale_color_gradientn(colours = c("black","#ff0000"),
+                                                   values = VIP_values_scale)+
+                    ggplot2::theme_bw()
+
+  }
+
+
+  if(model@typeC=="OPLS-DA"||model@typeC=="OPLS"){
+
+    OPLS_data <- model_data
+
+    loading_plot <- ggpubr::ggscatter(OPLS_data$Loadings,
+                    x=if(comp[1]==1) paste("p",comp[1],sep = "") else paste("o",comp[1]-1,sep = ""),
+                    y= if(comp[2]==1) paste("p",comp[2],sep = "") else paste("o",comp[2]-1,sep = ""),
+                    size = 2,label = label,point=point,
+                    repel = repel,font.label = font.label,color="Vip")+
+      ggplot2::labs(x=paste(if(comp[1]==1) paste("Pred. Comp") else paste("Ortho. Comp"),comp[1]," (",model@modelDF$R2X[comp[1]]*100,"%)"),
+                    y=paste(if(comp[2]==1) paste("Pred. Comp") else paste("Ortho. Comp"),comp[2]," (",model@modelDF$R2X[comp[2]]*100,"%)"),
+                    title = model@typeC)+
+      ggplot2::scale_color_gradientn(colours = c("black","#ff0000"),values = VIP_values_scale)+
+      ggplot2::theme_bw()
+
+  }
+
+  return(loading_plot+theme)
+}
+
