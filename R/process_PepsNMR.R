@@ -82,7 +82,7 @@ plot_interactive_Spectra <- function(Spectrum_data,plot_resolution=0.25,limit_n_
   }
 
   plt <- tidyr::gather(Spectrum_data,-Sample,value = "Intensity",key = "ppm")%>%ggplot2::ggplot(ggplot2::aes(as.numeric(ppm),Intensity,color=as.character(Sample),group=Sample))+
-    ggplot2::geom_line(aes(text=paste("Chemical Shift:",round(as.numeric(ppm),6)))) + ggplot2::scale_x_reverse(breaks=seq(-0.5,12,0.1)) + ggplot2::labs(y="Intensity (Relative)",x="Chemical shift (ppm)",color="Sample identification")
+    ggplot2::geom_line(ggplot2::aes(text=paste("Chemical Shift:",round(as.numeric(ppm),6)))) + ggplot2::scale_x_reverse(breaks=seq(-0.5,12,0.1)) + ggplot2::labs(y="Intensity (Relative)",x="Chemical shift (ppm)",color="Sample identification")
   plotly::ggplotly(plt,tooltip = c("text","y","group"))
 
 }
