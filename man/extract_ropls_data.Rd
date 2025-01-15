@@ -4,10 +4,18 @@
 \alias{extract_ropls_data}
 \title{Extrai no formato de planilha as informacoes de um modelo do pacote ropls}
 \usage{
-extract_ropls_data(ropls_object)
+extract_ropls_data(
+  ropls_object,
+  bins_roundPrecision = 4,
+  VIP_roundPrecision = 2
+)
 }
 \arguments{
 \item{ropls_object}{Objeto da classe opls gerado pelo pacote ropls. Pode ser de qualquer um dos tipos: PCA, PLS-DA ou OPLS-DA.}
+
+\item{bins_roundPrecision}{Numero de casas decimais permitidas na representação dos bins}
+
+\item{VIP_roundPrecision}{Numero de casas decimais permitidas na representação dos valores de VIP}
 }
 \value{
 Retorna uma lista contendo dois dataframes. Um referente aos scores do modelo gerado e outro

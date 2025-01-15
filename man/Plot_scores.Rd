@@ -2,7 +2,7 @@
 % Please edit documentation in R/ROPLS_plots.R
 \name{Plot_scores}
 \alias{Plot_scores}
-\title{Title}
+\title{Plota grafico de scores a partir dos modelos gerados pelo ROPLS}
 \usage{
 Plot_scores(
   model,
@@ -14,7 +14,7 @@ Plot_scores(
   font.label = c(12, "plain"),
   point = T,
   repel_labels = F,
-  theme = ggpubr::theme_pubr()
+  theme = NULL
 )
 }
 \arguments{
