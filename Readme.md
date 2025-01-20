@@ -42,8 +42,6 @@ BiocManager::install("Juniorrod2/NAPRMN_package")
 
 ## Example (Em construção)
 
-This is a basic example which shows you how to solve a common problem:
-
 ``` r
 library(NAPRMN)
 ## basic example code

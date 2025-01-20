@@ -1,63 +1,3 @@
-Plot_ropls_scores <- function(model,groups=vector(),comp=c(1,2),group_colors=NULL,show_labels=F,point_size=4,plot_theme=ggpubr::theme_pubr()){
-
-  if(model@typeC=="PCA"){
-
-    PCA_data <- extract_ropls_data(model)
-
-
-    if(length(groups)==0){
-
-      if(show_labels==T){
-        score_plot <- ggscatter(PCA_data$Scores,x=colnames(PCA_data$Scores[comp[1]+1]),
-                                y=colnames(PCA_data$Scores[comp[2]+1]),color = "blue",
-                                size = point_size,label = "Samples")
-      }
-
-      if(show_labels==F){
-        score_plot <- ggscatter(PCA_data$Scores,x=colnames(PCA_data$Scores[comp[1]+1]),
-                                y=colnames(PCA_data$Scores[comp[2]+1]),color = "red",
-                                size = point_size)
-      }
-
-
-      score_plot <- score_plot+labs(x=paste("PC",comp[1]," (",PCA@modelDF$R2X[comp[1]]*100,"%)"),
-                                    y=paste("PC",comp[2]," (",PCA@modelDF$R2X[comp[2]]*100,"%)"))
-    }
-
-
-    if(length(groups)!=0){
-
-      PCA_data$Scores$Group <- groups
-
-      if(show_labels==T){
-        score_plot <- ggscatter(PCA_data$Scores,x=colnames(PCA_data$Scores[comp[1]+1]),
-                                y=colnames(PCA_data$Scores[comp[2]+1]),color="Group",
-                                size = point_size,label = "Samples")
-      }
-
-      if(show_labels==F){
-        score_plot <- ggscatter(PCA_data$Scores,x=colnames(PCA_data$Scores[comp[1]+1]),
-                                y=colnames(PCA_data$Scores[comp[2]+1]),color="Group",
-                                size = point_size)
-      }
-
-      score_plot <- score_plot+
-        stat_ellipse(aes(color=Group,fill=Group),geom = "polygon",alpha=0.3)+
-        labs(x=paste("PC",comp[1]," (",PCA@modelDF$R2X[comp[1]]*100,"%)"),
-             y=paste("PC",comp[2]," (",PCA@modelDF$R2X[comp[2]]*100,"%)"))
-
-      if(!is.null(group_colors)){
-        score_plot <-  score_plot+scale_color_manual(values = group_colors)+
-          scale_fill_manual(values = group_colors)
-      }
-    }
-
-
-    return(score_plot+plot_theme)
-
-  }
-}
-
 
 #' Plota grafico de scores a partir dos modelos gerados pelo ROPLS
 #'
@@ -238,6 +178,24 @@ Plot_scores <- function(model,groups=NULL,comp=c(1,2),point_size=2,ellipse=T,lab
 
 
 
+#' Title
+#'
+#' @param model
+#' @param comp
+#' @param point
+#' @param repel
+#' @param font.label
+#' @param bin_identification
+#' @param bins_roundPrecision
+#' @param VIP_roundPrecision
+#' @param show_metabolite_name
+#' @param VIP_values_scale
+#' @param theme
+#'
+#' @return
+#' @export
+#'
+#' @examples
 Plot_loading <- function(model,comp=c(1,2),point = T,repel = F,font.label = c(12,"plain"),
                          bin_identification=NULL,bins_roundPrecision=4,VIP_roundPrecision=2,show_metabolite_name=T,
                          VIP_values_scale=NULL,theme=NULL){
@@ -312,3 +270,53 @@ Plot_loading <- function(model,comp=c(1,2),point = T,repel = F,font.label = c(12
   return(loading_plot+theme)
 }
 
+
+
+
+
+#' Title
+#'
+#' @param TrainingData
+#' @param model
+#' @param comp
+#' @param interactive
+#'
+#' @return
+#' @export
+#'
+#' @examples
+plot_slines_PLS <- function(TrainingData,model,comp=1,interactive=T){
+  PLS_data <- extract_ropls_data(model)
+
+  if(model@typeC=="PCA"){
+    metadataColuns=1
+  }else{
+    metadataColuns=c(1,2)
+  }
+
+  cov_pls <- as.data.frame(cov(TrainingData,PLS_data$Scores[-metadataColuns]))
+  cor_pls <- as.data.frame(cor(TrainingData,PLS_data$Scores[-metadataColuns]))
+
+  slines_data <- data.frame(
+    "bins"=as.numeric(rownames(cov_pls)),
+    "cor"=cor_pls[,comp],
+    "cov"=cov_pls[,comp])
+
+  slines_plot <- ggplot2::ggplot(slines_data,ggplot2::aes(bins,cov,fill=abs(cor)))+
+    ggplot2::geom_hline(yintercept = 0)+
+    ggplot2::geom_col()+
+    ggplot2::scale_fill_gradientn(colours = c("blue","green","red"),
+                         values = c(0,0.6,1))+
+    ggplot2::theme_bw()+
+    ggplot2::scale_x_reverse(breaks = seq(-0.5,12,0.5))+
+    ggplot2::labs(title = paste("Slines (",model@typeC,")","-","Comp",comp),
+         y="Cov(Tp,X)",
+         x="Chemical shift (ppm)",
+         fill="Abs(Cor(Tp,X))")
+
+  if(interactive==T){
+    return(plotly::ggplotly(slines_plot))
+  }else{
+    return(slines_plot)
+  }
+}
