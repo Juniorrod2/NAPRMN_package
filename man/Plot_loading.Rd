@@ -37,7 +37,8 @@ Plot_loading(
 
 \item{show_metabolite_name}{Logical. If \code{TRUE}, metabolite names are displayed in labels when \code{bin_identification} is provided (default: \code{TRUE}).}
 
-\item{VIP_values_scale}{A numeric vector of values to scale the color gradient for VIP values. If \code{NULL}, a default scale is applied.}
+\item{VIP_values_scale}{A numeric vector of values to scale the color gradient for VIP values. If \code{NULL}, a default scale is applied. Use a vector of length 3 were the first value represents
+the lower point of the scale, followed by the middle point and the highest point.}
 
 \item{theme}{A ggplot2 theme to customize the plot appearance. If \code{NULL}, the default \code{theme_bw} is used.}
 }

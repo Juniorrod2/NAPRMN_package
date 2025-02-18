@@ -31,7 +31,8 @@ Plot_loading2(
 
 \item{VIP_roundPrecision}{Numeric. Number of decimal places for rounding VIP values. Default is 2.}
 
-\item{VIP_values_scale}{Numeric vector. Scale values for VIP coloring gradient.}
+\item{VIP_values_scale}{Numeric vector. Scale values for VIP coloring gradient.Use a vector of length 3 were the first value represents
+the lower point of the scale, followed by the middle point and the highest point.}
 
 \item{theme}{A \code{ggplot2} theme object for customizing the plot appearance.}
 }

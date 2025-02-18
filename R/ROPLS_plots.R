@@ -202,7 +202,8 @@ Plot_scores <- function(model,groups=NULL,comp=c(1,2),point_size=2,ellipse=T,lab
 #' @param bins_roundPrecision Integer. Specifies the number of decimal places for rounding bin values (default: `4`).
 #' @param VIP_roundPrecision Integer. Specifies the number of decimal places for rounding VIP (Variable Importance in Projection) values (default: `2`).
 #' @param show_metabolite_name Logical. If `TRUE`, metabolite names are displayed in labels when `bin_identification` is provided (default: `TRUE`).
-#' @param VIP_values_scale A numeric vector of values to scale the color gradient for VIP values. If `NULL`, a default scale is applied.
+#' @param VIP_values_scale A numeric vector of values to scale the color gradient for VIP values. If `NULL`, a default scale is applied. Use a vector of length 3 were the first value represents
+#' the lower point of the scale, followed by the middle point and the highest point.
 #' @param theme A ggplot2 theme to customize the plot appearance. If `NULL`, the default `theme_bw` is used.
 #'
 #' @return  A ggplot object representing the loadings plot for the specified multivariate model.
@@ -304,7 +305,8 @@ Plot_loading <- function(model,comp=c(1,2),point = T,repel = F,font.label = c(12
 #' @param font.label A vector specifying font size, style, and color for variable labels. See `ggscatter` from `ggpubr` for details.
 #' @param bins_roundPrecision Numeric. Number of decimal places for rounding bin values. Default is 4.
 #' @param VIP_roundPrecision Numeric. Number of decimal places for rounding VIP values. Default is 2.
-#' @param VIP_values_scale Numeric vector. Scale values for VIP coloring gradient.
+#' @param VIP_values_scale Numeric vector. Scale values for VIP coloring gradient.Use a vector of length 3 were the first value represents
+#' the lower point of the scale, followed by the middle point and the highest point.
 #' @param theme A `ggplot2` theme object for customizing the plot appearance.
 #'
 #' @return A `ggplot2` object displaying the loading plot.
