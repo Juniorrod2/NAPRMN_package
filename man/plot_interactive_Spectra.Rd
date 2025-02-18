@@ -13,16 +13,19 @@ plot_interactive_Spectra(
 )
 }
 \arguments{
-\item{Spectrum_data}{Objeto contendo os dados espectrais gerados a partir do PepsNMR (Normalmente será uma matrix)}
+\item{Spectrum_data}{Objeto contendo os dados espectrais gerados a partir do PepsNMR. Pode estar na forma de matrix ou dataframe.}
 
 \item{plot_resolution}{Caso o argumento limit_n_points seja TRUE, define para quantos porcento do número total de de pontos a resolução dos espectros será reduzida.
 Recomendado usar valores multiplos de 0.25 para evitar serrilhamento do espectro.}
 
-\item{limit_n_points}{Boleano, definindo se os espectros devem ou não sofre redução da resolução/numero de pontos antes de serem plotados.
-Recomendado caso possua muitos espectros ou esteja rodando em uma maquina mais fraca. Por padrão, a resolução será limitada a 10000 pontos/espectro}
+\item{limit_n_points}{Booleano, definindo se os espectros devem ou não sofre redução da resolução/numero de pontos antes de serem plotados.
+Recomendado na visualização de multiplos espectros sem redução da janela espectral.}
 
-\item{plot_only}{Vetor numerico definindo os indices dos espectros a serem plotados. Se definido como zero, todos os espectros na matrix serao plotados (Padrao).
-Por conta da coersao automatica do tipo de dado, nao e possivel plotar apenas um espectro, de forma que se for fornecido apenas um valor o espectro seguinte sera plotado automaticamente.}
+\item{plot_only}{Vetor numerico definindo os indices dos espectros a serem plotados (Pode ser um unico indice ou vetor contendo multiplos indices)
+. Se definido como zero, apenas os 10 primeiros
+espectros serão representados (Padrão) ou o numero total de espectros se menor que 10.}
+
+\item{Spectrum_window}{Recebe um vetor de tamanho 2, contendo os limites superior e inferior da janela espectral a ser representada}
 }
 \value{
 Retorna um objeto de grafico interativo do tipo plotly
