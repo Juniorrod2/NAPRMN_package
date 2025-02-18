@@ -291,6 +291,103 @@ Plot_loading <- function(model,comp=c(1,2),point = T,repel = F,font.label = c(12
 
 
 
+#' Plot Loadings of a Multivariate Model
+#'
+#' This function generates a loading plot for PCA, PLS, PLS-DA, OPLS, or OPLS-DA models.
+#' It visualizes the importance of variables in different components and should be used
+#' instead of `Plot_scores` when the predictor variables in the model do not correspond to a spectrum.
+#'
+#' @param model An object containing a PCA, PLS, PLS-DA, OPLS, or OPLS-DA model from the ROPLS package.
+#' @param comp A numeric vector of length 2 specifying the components to be plotted. Default is c(1,2).
+#' @param point Logical. If TRUE, points representing variables are displayed. Default is TRUE.
+#' @param repel Logical. If TRUE, labels are repelled to avoid overlap. Default is FALSE.
+#' @param font.label A vector specifying font size, style, and color for variable labels. See `ggscatter` from `ggpubr` for details.
+#' @param bins_roundPrecision Numeric. Number of decimal places for rounding bin values. Default is 4.
+#' @param VIP_roundPrecision Numeric. Number of decimal places for rounding VIP values. Default is 2.
+#' @param VIP_values_scale Numeric vector. Scale values for VIP coloring gradient.
+#' @param theme A `ggplot2` theme object for customizing the plot appearance.
+#'
+#' @return A `ggplot2` object displaying the loading plot.
+#'
+#' @details
+#' - For PCA models, variables are colored uniformly.
+#' - For PLS and PLS-DA models, variables are colored according to their VIP scores.
+#' - For OPLS and OPLS-DA models, predictive (`p`) and orthogonal (`o`) components are correctly labeled on the axes.
+#'
+#' This function should be used instead of `Plot_scores` when the variables used as predictors in the model
+#' do not correspond to a spectrum.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' Plot_loading2(model, comp = c(1,2), point = TRUE, repel = FALSE, font.label = c(12, "plain"))
+#' }
+
+Plot_loading2 <- function(model,comp=c(1,2),point = T,repel = F,font.label = c(12,"plain"),
+                          bins_roundPrecision=4,VIP_roundPrecision=2,
+                          VIP_values_scale=NULL,theme=NULL){
+
+  model_data <- extract_ropls_data(model,bins_roundPrecision = bins_roundPrecision,VIP_roundPrecision = VIP_roundPrecision)
+  model_data$Loadings$bins <- rownames(model_data$Loadings)
+
+  label <- "bins"
+
+  if(model@typeC=="PCA"){
+
+    PCA_data <- model_data
+
+    loading_plot <- ggpubr::ggscatter(PCA_data$Loadings,
+                                      x=paste("p",comp[1],sep = ""),
+                                      y=paste("p",comp[2],sep = ""),
+                                      size = 2,label = label,point=point,
+                                      repel = repel,font.label = font.label)+
+      ggplot2::labs(x=paste("PC",comp[1]," (",model@modelDF$R2X[comp[1]]*100,"%)"),
+                    y=paste("PC",comp[2]," (",model@modelDF$R2X[comp[2]]*100,"%)"),
+                    title = model@typeC)+
+      ggplot2::theme_bw()
+  }
+
+
+  if(model@typeC=="PLS-DA"||model@typeC=="PLS"){
+
+    PLS_data <- model_data
+
+    loading_plot <- ggpubr::ggscatter(PLS_data$Loadings,
+                                      x=paste("p",comp[1],sep = ""),
+                                      y=paste("p",comp[2],sep = ""),
+                                      size = 2,label = label,point=point,
+                                      repel = repel,font.label = font.label,color="Vip")+
+      ggplot2::labs(x=paste("Comp",comp[1]," (",model@modelDF$R2X[comp[1]]*100,"%)"),
+                    y=paste("Comp",comp[2]," (",model@modelDF$R2X[comp[2]]*100,"%)"),
+                    title = model@typeC)+
+      ggplot2::scale_color_gradientn(colours = c("black","#ff0000"),
+                                     values = VIP_values_scale)+
+      ggplot2::theme_bw()
+
+  }
+
+
+  if(model@typeC=="OPLS-DA"||model@typeC=="OPLS"){
+
+    OPLS_data <- model_data
+
+    loading_plot <- ggpubr::ggscatter(OPLS_data$Loadings,
+                                      x=if(comp[1]==1) paste("p",comp[1],sep = "") else paste("o",comp[1]-1,sep = ""),
+                                      y= if(comp[2]==1) paste("p",comp[2],sep = "") else paste("o",comp[2]-1,sep = ""),
+                                      size = 2,label = label,point=point,
+                                      repel = repel,font.label = font.label,color="Vip")+
+      ggplot2::labs(x=paste(if(comp[1]==1) paste("Pred. Comp") else paste("Ortho. Comp"),comp[1]," (",model@modelDF$R2X[comp[1]]*100,"%)"),
+                    y=paste(if(comp[2]==1) paste("Pred. Comp") else paste("Ortho. Comp"),comp[2]," (",model@modelDF$R2X[comp[2]]*100,"%)"),
+                    title = model@typeC)+
+      ggplot2::scale_color_gradientn(colours = c("black","#ff0000"),values = VIP_values_scale)+
+      ggplot2::theme_bw()
+
+  }
+
+  return(loading_plot+theme)
+}
+
 
 
 #' Plot S-Lines for PLS(-DA) Models
