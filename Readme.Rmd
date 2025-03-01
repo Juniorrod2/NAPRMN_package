@@ -63,13 +63,13 @@ BiocManager::install("Juniorrod2/NAPRMN_package")
 
 -   autophase(): Aplica correção de fase automática a espectros RMN usando diferentes métodos.
 
--    Spectra_align(): Realiza o alinhamento espectral para corrigir deslocamentos químicos.
+-   Spectra_align(): Realiza o alinhamento espectral para corrigir deslocamentos químicos.
 
 -   calculate_spectrum_resolution(): Calcula a resolução espectral a partir dos dados adquiridos.
 
--    compare_phasing_methods(): Compara diferentes métodos de correção de fase.
+-   compare_phasing_methods(): Compara diferentes métodos de correção de fase.
 
-### Pré-processamento e Normalização 
+### Pré-processamento e Normalização
 
 -   CleanDataMatrix(): Remove ruídos e valores ausentes da matriz de dados espectrais.
 
@@ -77,11 +77,11 @@ BiocManager::install("Juniorrod2/NAPRMN_package")
 
 -   NMRMatrixAsDataframe(): Converte matrizes de espectros para um formato adequado para análise estatística.
 
-### Integração e Segmentação Espectral 
+### Integração e Segmentação Espectral
 
 -   NMR_integration(): Realiza a integração de picos em espectros RMN.
 
-### Visualização e Análises Estatísticas 
+### Visualização e Análises Estatísticas
 
 -   plot_interactive_Spectra(): Gera visualizações interativas de espectros RMN.
 
