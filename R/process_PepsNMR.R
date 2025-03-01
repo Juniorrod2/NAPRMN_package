@@ -54,7 +54,7 @@ NMRMatrixAsDataframe <- function(NMR_matrix,DirNames=F){
 #' @export
 #' @importFrom magrittr `%>%`
 #' @examples \dontrun{Plot_NMR <- plot_interactive_Spectra(Bins_data)}
-plot_interactive_Spectra <- function(Spectrum_data,plot_resolution=0.25,limit_n_points=F,plot_only=0,Spectrum_window=NULL){
+plot_interactive_spectra <- function(Spectrum_data,plot_resolution=0.25,limit_n_points=F,plot_only=0,Spectrum_window=NULL){
 
 #Caso apenas um espectro seja plotado, ele sera duplicado para evitar a coercao da matrix em vetor
   if(length(plot_only)==1&&plot_only!=0){
@@ -65,7 +65,7 @@ plot_interactive_Spectra <- function(Spectrum_data,plot_resolution=0.25,limit_n_
   if(length(plot_only)==1&&plot_only==0){
     if(nrow(Spectrum_data)>10){
       plot_only=1:10
-    }else plot_only=nrow(Spectrum_data)
+    }else plot_only=1:nrow(Spectrum_data)
   }
 
   if(!is.null(Spectrum_window)){
