@@ -20,13 +20,18 @@
 #'
 autophase <- function(spectra,phasingMethod="SPC_AAM",absorptionOnly = F,withBC = F){
 
+  cat("Started phasing\n")
+
   for(i in 1:dim(spectra)[1]){
     spec <- spectra[i,]
     phased_spec <-NMRphasing::NMRphasing(specDatIn = spec,method = phasingMethod,
                                          absorptionOnly = absorptionOnly,withBC = withBC)
     spectra[i,] <- phased_spec
+
+    cat("Phased spectrum",i,"out of",dim(spectra)[1],"\n",sep = " ")
   }
 
+  cat("Phasing ended\n")
   return(spectra)
 }
 
