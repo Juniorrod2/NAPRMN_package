@@ -181,10 +181,78 @@ Plot_scores <- function(model,groups=NULL,comp=c(1,2),point_size=2,ellipse=T,lab
 
 
 
+#' Generates multiple PCA score plots
+#'
+#' This function creates an overview of PCA scores, generating plots for each pair of principal components.
+#'
+#' @param PCA_object ropls PCA object containing the analysis results.
+#' @param groups Vector of groups to color the points in the plots.
+#' @param labels Vector of labels to identify the points in the plots.
+#' @param label_size Font size for the labels. Default is 7.
+#' @param plot_font_size Font size for the plot elements. Default is 7.
+#' @param repel Logical. If `TRUE`, labels are repelled to avoid overlap. Default is `FALSE`.
+#' @param show_points Logical. If `TRUE`, points are displayed in the plot. Default is `TRUE`.
+#' @param add Additional elements to be added to the plots, such as scales, labels, or any other
+#' ggplot2 element. For multiple elements provide a list containing the elements to be added. Default is `NULL`.
+#' @param scale_expansion Axis expansion factor for the plots, used to avoid cliping sample names on plot margins. Default is 0.15.
+#' @param return_list Logical. If `TRUE`, returns a list containing the ggplot2 objects to be used with wrap_plots().
+#' if `FALSE` return a single combined plot. Default is `FALSE`.
+#'
+#' @return A single plot combining multiple pairs of principal components or a list of plots if `return_list = TRUE`.
+#'
+#'
+#' @examples
+#' \dontrun{
+#'  Example usage:
+#'  plot_scores_overview(PCA_object, groups = my_groups, labels = my_labels)
+#'}
+#'
+#' @export
+#'
+plot_scores_overview <- function(PCA_object,
+                                 groups,
+                                 labels,
+                                 label_size = 7,
+                                 plot_font_size = 7,
+                                 repel = F,
+                                 show_points = T,
+                                 add = NULL,
+                                 scale_expansion = 0.15,
+                                 return_list = F) {
 
+  ncomps <- PCA_object@summaryDF$pre
+  pca_scores_list <- list()
 
+  for (i in seq(1, ncomps, 2)) {
+    if (i == ncomps)
+      break
 
+    pca_scores_list[[length(pca_scores_list) + 1]] <- Plot_scores(
+      PCA_object,
+      groups = groups,
+      ellipse = F,
+      labels = labels,
+      comp = c(i, i + 1),
+      font.label = label_size,
+      repel_labels = repel,
+      point = show_points
+    ) + ggplot2::theme(
+      plot.title = ggplot2::element_blank(),
+      axis.title = ggplot2::element_text(size = plot_font_size),
+      legend.text = ggplot2::element_text(size = plot_font_size),
+      legend.title = ggplot2::element_text(size = plot_font_size),
+      axis.text = ggplot2::element_text(size = plot_font_size)
+    ) + ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = scale_expansion)) +
+        ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = scale_expansion)) +
+      add
+  }
 
+  if (return_list) {
+    return(pca_scores_list)
+  } else{
+    patchwork::wrap_plots(pca_scores_list)
+  }
+}
 
 #'  Plot Loadings for Multivariate Models
 #'
@@ -390,6 +458,70 @@ Plot_loading2 <- function(model,comp=c(1,2),point = T,repel = F,font.label = c(1
   return(loading_plot+theme)
 }
 
+#' Overview of PCA Loadings
+#'
+#' This function provides an overview of the loadings from a PCA model,
+#' arranging loading plots for consecutive principal components (PC1 vs PC2, PC3 vs PC4, etc.).
+#'
+#' @param PCA_object A PCA object containing the loadings to be visualized.
+#' @param label_size Font size for variable labels in the plot. Default: 7.
+#' @param plot_font_size Font size for text elements in the plot. Default: 7.
+#' @param repel Logical. If TRUE, variable labels are adjusted to avoid overlap. Default: FALSE.
+#' @param show_points Logical. If TRUE, displays points representing variables in the plot. Default: TRUE.
+#' @param add Additional graphical elements to be included in the plots. Default: NULL.
+#' @param scale_expansion Axis expansion factor for better visualization. Default: 0.15.
+#' @param return_list Logical. If TRUE, returns a list of individual plots instead of a combined plot. Default: FALSE.
+#'
+#' @return A combined plot of PCA loadings for multiple principal components.
+#' If `return_list = TRUE`, returns a list of individual plots.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Assuming `pca_model` is a valid PCA object:
+#' plot_loading_overview(pca_model)
+#' }
+#'
+plot_loading_overview <- function(PCA_object,
+                                  label_size = 7,
+                                  plot_font_size = 7,
+                                  repel = F,
+                                  show_points = T,
+                                  add = NULL,
+                                  scale_expansion = 0.15,
+                                  return_list = F) {
+  ncomps <- PCA_object@summaryDF$pre
+  pca_loading_list <- list()
+
+  for (i in seq(1, ncomps, 2)) {
+    if (i == ncomps)
+      break
+
+    pca_loading_list[[length(pca_loading_list) + 1]] <- Plot_loading2(
+      PCA_object,
+      comp = c(i, i + 1),
+      point = show_points,
+      repel = repel,
+      font.label = label_size
+    ) +
+      ggplot2::theme(
+        plot.title = ggplot2::element_blank(),
+        axis.title = ggplot2::element_text(size = plot_font_size),
+        legend.text = ggplot2::element_text(size = plot_font_size),
+        legend.title = ggplot2::element_text(size = plot_font_size),
+        axis.text = ggplot2::element_text(size = plot_font_size)
+      ) + ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = scale_expansion)) +
+          ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = scale_expansion)) +
+      add
+  }
+
+  if (return_list) {
+    return(pca_loading_list)
+  } else{
+    patchwork::wrap_plots(pca_loading_list)
+  }
+}
 
 
 #' Plot S-Lines for PLS(-DA) Models

@@ -24,4 +24,5 @@ Imports:
     speaq,
     ggpubr,
     NMRphasing,
-    rlang
+    rlang,
+    patchwork
