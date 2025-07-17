@@ -1,5 +1,8 @@
 ---
 output: github_document
+editor_options: 
+  markdown: 
+    wrap: sentence
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -21,7 +24,11 @@ knitr::opts_chunk$set(
 
 ## Introdução
 
-Esta ferramenta foi desenvolvida para agrupar um conjunto de funções auxiliares para processamento e analise de dados de RMN para metabolômica. Este pacote funciona como complemento para outras ferramentas já estabelecidas, sendo elas:
+Este pacote fornece um conjunto de funções para processamento, normalização e análise de espectros de RMN (Ressonância Magnética Nuclear),\
+incluindo métodos para correção de fase, alinhamento, integração espectral, normalização de dados e análise estatística.\
+Ele é projetado para auxiliar em estudos metabolômicos e outras aplicações que utilizam espectroscopia de RMN como ferramenta analítica.
+
+Este pacote funciona como complemento para outras ferramentas já estabelecidas, sendo elas:
 
 -   ***PepsNMR***: Realiza o processamento de dados de RMN e fornece ferramentas para o pré-processamento dos dados
     -   Adiciona uma função atualizada para visualização dos espectros, permitindo a visualização interativa com o auxilio do pacote plotly;
@@ -50,4 +57,46 @@ BiocManager::install("Juniorrod2/NAPRMN_package")
 
 ```
 
-## 
+## Principais Funcionalidades
+
+### Processamento de Espectros
+
+-   autophase(): Aplica correção de fase automática a espectros RMN usando diferentes métodos.
+
+-   Spectra_align(): Realiza o alinhamento espectral para corrigir deslocamentos químicos.
+
+-   calculate_spectrum_resolution(): Calcula a resolução espectral a partir dos dados adquiridos.
+
+-   compare_phasing_methods(): Compara diferentes métodos de correção de fase.
+
+### Pré-processamento e Normalização
+
+-   CleanDataMatrix(): Remove ruídos e valores ausentes da matriz de dados espectrais.
+
+-   DataNormalization(): Normaliza os espectros utilizando diferentes abordagens estatísticas.
+
+-   NMRMatrixAsDataframe(): Converte matrizes de espectros para um formato adequado para análise estatística.
+
+### Integração e Segmentação Espectral
+
+-   NMR_integration(): Realiza a integração de picos em espectros RMN.
+
+### Visualização e Análises Estatísticas
+
+-   plot_interactive_Spectra(): Gera visualizações interativas de espectros RMN.
+
+-   plot_raster_spectrum(): Cria representações rasterizadas de espectros.
+
+-   plot_slines(): Plota gráficos de covariância e correlação entre variáveis espectrais e componentes de modelos PLS/PCA.
+
+-   Plot_scores(): Visualiza as pontuações de amostras em modelos PCA/PLS-DA.
+
+-   Plot_loading(): Representa as cargas fatoriais de modelos PCA/PLS-DA.
+
+-   Plot_loading2(): Variante do Plot_loading, útil quando as variáveis não representam espectros contínuos.
+
+-   extract_ropls_data(): Extrai informações relevantes de modelos PLS/O-PLS gerados pelo pacote ropls.
+
+-   stocsy(): Implementa a análise STOCSY para identificar correlações espectrais.
+
+-   stocsy_by_region(): Variante do STOCSY que foca em regiões específicas do espectro.
