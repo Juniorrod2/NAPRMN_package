@@ -88,6 +88,161 @@ plot_interactive_spectra <- function(Spectrum_data,plot_resolution=0.25,limit_n_
 }
 
 
+#'  Plot NMR Spectra
+#'
+#' This function generates line plots for one or multiple NMR spectra stored in a
+#' matrix or data frame format. It supports automatic selection of samples to plot,
+#' optional bucketing, and cropping the spectrum to a defined chemical-shift window.
+#'
+#' @param Spectrum_data Matrix or data frame containing NMR spectral data.
+#' Rows represent samples and columns represent chemical shifts (ppm).
+#'   Must include a column named `"Sample"` if already converted to data frame.
+#'
+#' @param plot_resolution Numeric (default = 0.25).
+#' Defines the resolution used when bucketing (i.e., proportion of total points kept).
+#'
+#' @param limit_n_points Logical (default = `FALSE`).
+#' If `TRUE`, the spectra are bucketed using \code{PepsNMR::Bucketing}.
+#'   If `FALSE`, the full resolution is retained.
+#'
+#' @param plot_only Integer vector or single integer (default = 0).
+#' Specifies which samples to plot.
+#'   - If `0`, the first 10 samples (or all, if <10) are plotted automatically.
+#'   - If a single non-zero value is provided, that sample is plotted twice (internal handling).
+#'   - If a vector is provided, the selected samples are plotted.
+#'
+#' @param Spectrum_window Numeric vector of length 2 (default = `NULL`).
+#'Chemical shift window for cropping the spectra (ppm).
+#'   Values are passed to \code{PepsNMR::WindowSelection(from.ws, to.ws)}.
+#'
+#' @returns A `ggplot2` object containing the plotted spectra.
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#' # Assuming `Spectra` is a matrix of NMR data with samples in rows:
+#' plot_spectra(Spectra)
+#'
+#' # Plot only samples 1, 3 and 5:
+#' plot_spectra(Spectra, plot_only = c(1, 3, 5))
+#'
+#' # Apply spectral window cropping:
+#' plot_spectra(Spectra, Spectrum_window = c(0.5, 10))
+#'
+#' # Limit number of points via bucketing:
+#' plot_spectra(Spectra, limit_n_points = TRUE, plot_resolution = 0.1)
+#' }
+plot_spectra <- function (Spectrum_data, plot_resolution = 0.25, limit_n_points = F,
+                          plot_only = 0, Spectrum_window = NULL)
+{
+  if (length(plot_only) == 1 && plot_only != 0) {
+    plot_only <- c(plot_only, plot_only)
+  }
+  if (length(plot_only) == 1 && plot_only == 0) {
+    if (nrow(Spectrum_data) > 10) {
+      plot_only = 1:10
+    }
+    else plot_only = 1:nrow(Spectrum_data)
+  }
+  if (!is.null(Spectrum_window)) {
+    Spectrum_data <- PepsNMR::WindowSelection(Spectrum_data,
+                                              from.ws = Spectrum_window[1], to.ws = Spectrum_window[2])
+  }
+  n_data_points <- round(dim(Spectrum_data)[2] * plot_resolution)
+  if (limit_n_points == F && is.matrix(Spectrum_data)) {
+    Spectrum_data <- NMRMatrixAsDataframe(Spectrum_data[plot_only,
+    ])
+  }
+  if (limit_n_points == T && is.matrix(Spectrum_data)) {
+    Spectrum_data <- PepsNMR::Bucketing(Spectrum_data[plot_only,
+    ], width = F, mb = n_data_points) %>% NMRMatrixAsDataframe()
+  }
+  plt <- tidyr::gather(Spectrum_data, -Sample, value = "Intensity",
+                       key = "ppm") %>% ggplot2::ggplot(ggplot2::aes(as.numeric(ppm),
+                                                                     Intensity, color = as.character(Sample), group = Sample)) +
+    ggplot2::geom_line(ggplot2::aes(text = paste("Chemical Shift:",
+                                                 round(as.numeric(ppm), 6)))) + ggplot2::scale_x_reverse(breaks = seq(-0.5,
+                                                                                                                      12, 0.1)) + ggplot2::labs(y = "Intensity (Relative)",
+                                                                                                                                                x = "Chemical shift (ppm)", color = "Sample identification")
+  return(plt)
+}
+
+
+#' Plot Full Spectra With Overlaid Binned Intensities
+#'
+#' This function creates an interactive plot combining raw NMR spectra
+#' with overlaid binned spectral intensities.
+#' The binned values are summarized across samples (default: mean) and displayed
+#' as vertical bars on top of the full-resolution spectra.
+#'
+#' @param full_spectra Matrix or data frame containing full-resolution NMR spectra.
+#' Passed to \code{plot_spectra()}. Rows represent samples; columns represent ppm values.
+#'
+#' @param bin_data Matrix or data frame containing already-binned spectra.
+#' Columns must correspond to bins, whose names represent bin centers (ppm).
+#'
+#' @param bin_width Numeric. Width of each bin (in ppm) used for plotting the bar overlays.
+#'
+#' @param summary_function Function applied across samples to summarize each bin
+#' Useful summary functions: Mean; median; sum; sd; max; min.
+#'
+#' @param plot_only Integer or vector
+#' Samples to plot in the full spectra.
+#'   Passed directly to \code{plot_spectra()}.
+#'
+#' @param bin_round_precision Integer. Number of decimal places used when rounding
+#' Numeric precision used for plotting and attributing bins to metabolites
+#'
+#' @returns A \code{plotly} interactive plot showing the full spectra and the overlaid bins.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # full_spectra: matrix of spectra (samples x ppm points)
+#' # bin_data: binned spectra (samples x bins)
+#'
+#' overlaid_bins_plot(
+#'   full_spectra = my_full_spectra,
+#'   bin_data = my_bin_matrix,
+#'   bin_width = 0.05
+#' )
+#'
+#' # Using a custom summary function
+#' overlaid_bins_plot(
+#'   full_spectra = my_full_spectra,
+#'   bin_data = my_bin_matrix,
+#'   bin_width = 0.05,
+#'   summary_function = median
+#' )
+#' }
+#'
+overlaid_bins_plot <- function(full_spectra,
+                               bin_data,
+                               bin_width,
+                               summary_function=mean,
+                               plot_only=0,
+                               bin_round_precision=4){
+
+  full_spectra_plot <- plot_spectra(full_spectra,plot_only = plot_only)
+
+  median_binned_spectra <- dplyr::summarise_all(as.data.frame(bin_data),summary_function)
+
+  median_binned_spectra <- tidyr::gather(median_binned_spectra,key="bin",value="intensity")
+
+
+  binned_spectra <- full_spectra_plot + ggplot2::geom_col(data=median_binned_spectra,
+                                                          mapping = ggplot2::aes(round(as.numeric(bin),bin_round_precision),
+                                                                                 intensity),
+                                                          inherit.aes = F,
+                                                          width = bin_width,
+                                                          just = 0.5,
+                                                          color="red",
+                                                          position = ggplot2::position_identity())
+
+  plotly::ggplotly(binned_spectra)
+}
+
 
 #' Alinhamento espectral via metodo CluPA
 #' @description

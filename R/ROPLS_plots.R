@@ -524,6 +524,188 @@ plot_loading_overview <- function(PCA_object,
 }
 
 
+
+#' Plot Loading Profiles for PCA, PLS(-DA), or OPLS(-DA) Models
+#'
+#' This function generates loading plots for multivariate models produced by
+#' \code{ropls}, supporting PCA, PLS, PLS-DA, OPLS, and OPLS-DA.
+#' Loadings are displayed as vertical bars along the chemical shift axis.
+#' For supervised methods (PLS/OPLS), VIP values can be used to color the bars.
+#' Plots can be returned as static \code{ggplot2} figures or converted to
+#' interactive \code{plotly} visualizations.
+#'
+#' @param model An \code{ropls} model object (PCA, PLS(-DA), or OPLS(-DA)).
+#'
+#' @param comp Integer. Component to plot (default = 1).
+#'
+#' @param interactive Logical (default = TRUE).
+#' If \code{TRUE}, the function returns an interactive \code{plotly} object;
+#'   otherwise, a static \code{ggplot2} plot.
+#'
+#' @param VIP_values_scale Optional numeric vector of length 2 defining the scale
+#' used in \code{ggplot2::scale_fill_gradientn()} for VIP coloring
+#'   (used only for PLS/OPLS models).
+#'   Example: \code{c(0, 1)}.
+#'
+#' @param theme Optional \code{ggplot2} theme object to add to the final plot.
+#' Example: \code{ggplot2::theme_minimal()}.
+#'
+#' @returns
+#' A \code{plotly} interactive plot if \code{interactive = TRUE},
+#' otherwise a \code{ggplot2} object representing the loading plot.
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Fit a PCA model with ropls
+#' pca_model <- ropls::opls(X, predI = 3)
+#'
+#' # Plot first principal component loadings
+#' plot_loading_lines(pca_model, comp = 1)
+#'
+#' # Plot PLS-DA loadings with VIP scaling
+#' plsda_model <- ropls::opls(X, Y, predI = 2)
+#' plot_loading_lines(
+#'   model = plsda_model,
+#'   comp = 1,
+#'   VIP_values_scale = c(0, 2),
+#'   theme = ggplot2::theme_minimal()
+#' )
+#'
+#' # Static version
+#' plot_loading_lines(pca_model, interactive = FALSE)
+#' }
+#'
+plot_loading_lines <- function (model,
+                                comp = 1,
+                                interactive=T,
+                                VIP_values_scale = NULL,
+                                theme = NULL)
+{
+  model_data <- extract_ropls_data(model)
+
+  if (model@typeC == "PCA") {
+
+    PCA_data <- model_data
+    loading_data <- data.frame(
+      "bins"=as.numeric(PCA_data$Loadings$bins),
+      "loadings"=PCA_data$Loadings[[comp+1]])
+
+    loading_plot <- ggplot2::ggplot(
+      loading_data) +
+      ggplot2::aes(x=bins,
+                   y=loadings) +
+      geom_col(fill="black")+
+      ggplot2::labs(
+        title = paste("Loadings (",
+                      model@typeC,
+                      ")",
+                      "-",
+                      paste(
+                        "PC",
+                        comp,
+                        " (",
+                        model@modelDF$R2X[comp] * 100,
+                        "%)")
+        ),
+        x = "Chemical shift (ppm)") +
+      ggplot2::scale_x_reverse() +
+      ggplot2::theme_bw()
+
+
+  }
+  if (model@typeC == "PLS-DA" || model@typeC == "PLS") {
+
+    PLS_data <- model_data
+    Vip_values <- dplyr::select(PLS_data$Loadings,
+                                bins,
+                                Vip)
+    loading_values <- dplyr::select(PLS_data$Loadings,
+                                    -Vip)
+
+    loading_data <- data.frame(
+      "bins"=as.numeric(PLS_data$Loadings$bins),
+      "loadings"=loading_values[[comp+1]],
+      "Vip"=Vip_values$Vip)
+
+    loading_plot <- ggplot2::ggplot(
+      loading_data) +
+      ggplot2::aes(x=bins,
+                   y=loadings,
+                   fill=Vip) +
+      geom_col()+
+      ggplot2::scale_fill_gradientn(
+        colours = c("black","#ff0000"),
+        values = VIP_values_scale) +
+      ggplot2::labs(
+        title = paste("Loadings (",
+                      model@typeC,
+                      ")",
+                      "-",
+                      paste(
+                        "Comp",
+                        comp,
+                        " (",
+                        model@modelDF$R2X[comp] * 100,
+                        "%)")
+        ),
+        x = "Chemical shift (ppm)") +
+      ggplot2::scale_x_reverse() +
+      ggplot2::theme_bw()
+
+
+  }
+  if (model@typeC == "OPLS-DA" || model@typeC == "OPLS") {
+
+    OPLS_data <- model_data
+
+    Vip_values <- dplyr::select(OPLS_data$Loadings,
+                                bins,
+                                Vip)
+    loading_values <- dplyr::select(OPLS_data$Loadings,
+                                    -Vip)
+
+    loading_data <- data.frame(
+      "bins"=as.numeric(OPLS_data$Loadings$bins),
+      "loadings"=loading_values[[comp+1]],
+      "Vip"=Vip_values$Vip)
+
+    loading_plot <- ggplot2::ggplot(
+      loading_data) +
+      ggplot2::aes(x=bins,
+                   y=loadings,
+                   fill=Vip) +
+      geom_col()+
+      ggplot2::scale_fill_gradientn(
+        colours = c("black","#ff0000"),
+        values = VIP_values_scale) +
+      ggplot2::labs(
+        title = paste("Loadings (",
+                      model@typeC,
+                      ")",
+                      "-",
+                      paste(if (comp == 1)
+                        paste("Pred. Comp")
+                        else paste("Ortho. Comp"),
+                        comp[1],
+                        " (",
+                        model@modelDF$R2X[comp] *
+                          100,
+                        "%)")
+        ),
+        x = "Chemical shift (ppm)") +
+      ggplot2::scale_x_reverse() +
+      ggplot2::theme_bw()
+
+  }
+
+  if (interactive==T) return(plotly::ggplotly(loading_plot + theme)) else
+    return(loading_plot + theme)
+
+}
+
+
 #' Plot S-Lines for PLS(-DA) Models
 #'
 #'  Generates S-line plots to visualize the covariance and correlation of variables
