@@ -5,115 +5,268 @@
 
 <!-- badges: start -->
 
+<!-- Add more badges as needed e.g. Travis CI, CRAN, License -->
+
+![GitHub last
+commit](https://img.shields.io/github/last-commit/Juniorrod2/NAPRMN_package)
+![GitHub repo
+size](https://img.shields.io/github/repo-size/Juniorrod2/NAPRMN_package)
 <!-- badges: end -->
 
-## Introdução
+## Sobre o Pacote (PT-BR)
 
-Este pacote fornece um conjunto de funções para processamento,
-normalização e análise de espectros de RMN (Ressonância Magnética
-Nuclear),  
-incluindo métodos para correção de fase, alinhamento, integração
-espectral, normalização de dados e análise estatística.  
-Ele é projetado para auxiliar em estudos metabolômicos e outras
-aplicações que utilizam espectroscopia de RMN como ferramenta analítica.
+**NAPRMN** fornece um conjunto avançado de funções para o processamento,
+normalização e análise de espectros de Ressonância Magnética Nuclear
+(RMN). O pacote inclui métodos para correção de fase, alinhamento,
+integração espectral, normalização de dados e análise estatística,
+auxiliando estudos metabolômicos e demais aplicações que usam
+espectroscopia de RMN como ferramenta analítica.
 
-Este pacote funciona como complemento para outras ferramentas já
-estabelecidas, sendo elas:
+O pacote complementa ferramentas já conhecidas, como PepsNMR, ROPLS e
+MetaboanalystR, oferecendo integração e funções adicionais que facilitam
+o fluxo analítico.
 
-- ***PepsNMR***: Realiza o processamento de dados de RMN e fornece
-  ferramentas para o pré-processamento dos dados
-  - Adiciona uma função atualizada para visualização dos espectros,
-    permitindo a visualização interativa com o auxilio do pacote plotly;
-  - Implementa uma função auxiliar para alinhamento dos espectros
-    utilizando o algoritmo CLUPA s com base na implementação do pacote
-    speaq;
-  - Implementa uma função para integração manual dos sinais;
-  - Implementa uma função para conversão automatica da matriz de saida
-    do PepsNMR em formato adequado (Dataframe) para ser exportado em
-    xlsx ou utilizado em outras ferramentas de analise.
-- ***ROPLS***: Implementa metodos multivariados de analise ao R,
-  incluindo PCA, PLS-DA. OPLS-DA e os metodos de regressão equivalentes.
-  - Implementa uma função voltada para facilitar a extração dos dados
-    dos modelos (Scores, Loadings e VIP) no formato de dataframe,
-    facilitando a plotagem dos resultados em gráficos personalizados;
-  - Implementa funções extras para visualização dos scores e loadings de
-    cada tipo de modelo (Ainda em processo de implementação).
-- Implementa funções de normalização, escalonamento e transfomação de
-  dados com base nas funções implementadas no pacote MetaboanalystR;
-- Implementa uma função de limpeza de dados, voltada para remover
-  variáveis constantes e não informativas dos dados a serem analisados;
-- Implementa funções para uso do metodo STOSY para visualização de
-  sinais correlacionados.
+## About the Package (EN)
 
-## Instalação do pacote
+**NAPRMN** provides a comprehensive set of functions for processing,
+normalization, and analysis of Nuclear Magnetic Resonance (NMR) spectra.
+It features advanced methods for phase correction, spectral alignment,
+integration, statistical normalization, and exploratory analysis,
+streamlining workflows for metabolomics and other NMR-based
+applications.
 
-A script abaixo faz a instalação da ferramenta a partir do github, além
-de fazer o download das dependências necessárias.
+## Recursos Principais / Key Features
+
+- Correção automática de fase (`autophase`)
+- Alinhamento espectral avançado (`Spectra_align`)
+- Integração manual e automática de picos (`NMR_integration`)
+- Normalização e limpeza de dados espectrais (`DataNormalization`,
+  `CleanDataMatrix`)
+- Conversão de matrizes para formatos analíticos
+  (`NMRMatrixAsDataframe`)
+- Visualização interativa dos espectros com plotly
+  (`plot_interactive_Spectra`)
+- Extração de resultados de modelos estatísticos (`extract_ropls_data`,
+  `Plot_scores`, `Plot_loading`)
+- Métodos de análise multivariada (PCA, PLS-DA, OPLS-DA com ROPLS)
+- Implementação do STOCSY para análise de correlação espectral
+  (`stocsy`, `stocsy_by_region`)
+
+## Compatibilidade
+
+O NAPRMN se integra diretamente com: - **PepsNMR**: para
+pré-processamento de espectros RMN. - **ROPLS**: métodos multivariados,
+extração facilitada dos resultados. - **MetaboanalystR**: funções para
+normalização, escalonamento e transformação de dados.
+
+## Instalação
+
+Requer R e os pacotes BiocManager e remotes.
 
 ``` r
 if (!require("BiocManager", quietly = TRUE)) {
-  install.packages("BiocManager")}
+  install.packages("BiocManager")
+}
 
 if (!require("remotes", quietly = TRUE)){
-  install.packages("remotes")}
+  install.packages("remotes")
+}
 
 BiocManager::install("Juniorrod2/NAPRMN_package")
 ```
 
-## Principais Funcionalidades
+## Funções Disponíveis
 
-### Processamento de Espectros
+### Pré-processamento, Limpeza e Normalização
 
-- autophase(): Aplica correção de fase automática a espectros RMN usando
-  diferentes métodos.
+- **CleanDataMatrix(data)**  
+  Remove colunas constantes ou inválidas (NA) de uma matriz numérica.
 
-- Spectra_align(): Realiza o alinhamento espectral para corrigir
-  deslocamentos químicos.
+  ``` r
+  cleaned <- CleanDataMatrix(data)
+  ```
 
-- calculate_spectrum_resolution(): Calcula a resolução espectral a
-  partir dos dados adquiridos.
+- **DataNormalization(data, rowNorm, transNorm, scaleNorm, ref)**  
+  Normaliza matriz de variáveis espectrais por métodos como quantile,
+  PQN, sum, median e aplica transformações log/raiz, escalonamento
+  autoscaling, pareto etc.
 
-- compare_phasing_methods(): Compara diferentes métodos de correção de
-  fase.
+  ``` r
+  norm <- DataNormalization(data, rowNorm="Quantile", scaleNorm="Autoscaling")
+  ```
 
-### Pré-processamento e Normalização
+------------------------------------------------------------------------
 
-- CleanDataMatrix(): Remove ruídos e valores ausentes da matriz de dados
-  espectrais.
+### Integração e Bucketing Espectral
 
-- DataNormalization(): Normaliza os espectros utilizando diferentes
-  abordagens estatísticas.
+- **NMR_integration(Spectrum_data, integration_intervals)**  
+  Integra áreas sob o espectro em regiões definidas pelo usuário (ex:
+  metabolitos).
 
-- NMRMatrixAsDataframe(): Converte matrizes de espectros para um formato
-  adequado para análise estatística.
+  ``` r
+  region <- data.frame(metabolito=c("Leucina"),ppm_i=c(0.94),ppm_f=c(0.97))
+  integrals <- NMR_integration(Spectrum_data, region)
+  ```
 
-### Integração e Segmentação Espectral
+------------------------------------------------------------------------
 
-- NMR_integration(): Realiza a integração de picos em espectros RMN.
+### Conversão e Suporte à Estrutura PepsNMR
 
-### Visualização e Análises Estatísticas
+- **NMRMatrixAsDataframe(NMR_matrix, DirNames=FALSE)**  
+  Converte matriz para dataframe organizado para exportação ou análise.
 
-- plot_interactive_Spectra(): Gera visualizações interativas de
-  espectros RMN.
+------------------------------------------------------------------------
 
-- plot_raster_spectrum(): Cria representações rasterizadas de espectros.
+### Correção de Fase e Alinhamento Espectral
 
-- plot_slines(): Plota gráficos de covariância e correlação entre
-  variáveis espectrais e componentes de modelos PLS/PCA.
+- **autophase(spectra, phasingMethod, absorptionOnly, withBC)**  
+  Realiza faseamento automático dos espectros via métodos do NMRphasing.
 
-- Plot_scores(): Visualiza as pontuações de amostras em modelos
-  PCA/PLS-DA.
+  ``` r
+  phased <- autophase(spectra)
+  ```
 
-- Plot_loading(): Representa as cargas fatoriais de modelos PCA/PLS-DA.
+- **compare_phasing_methods(spectra, fid_info, ref, absorptionOnly,
+  withBC, phasingMethods)**  
+  Compara vários métodos de faseamento em um espectro de referência.
 
-- Plot_loading2(): Variante do Plot_loading, útil quando as variáveis
-  não representam espectros contínuos.
+- **Spectra_align(spectra, nDivRange_ppm, maxShifts_ppm,
+  baselineThreshold, SNR.Th, show_info)**  
+  Alinha espectros usando o algoritmo CluPA (speaq) para corrigir
+  variações de deslocamento químico.
 
-- extract_ropls_data(): Extrai informações relevantes de modelos
-  PLS/O-PLS gerados pelo pacote ropls.
+  ``` r
+  aligned <- Spectra_align(spectra)
+  ```
 
-- stocsy(): Implementa a análise STOCSY para identificar correlações
-  espectrais.
+- **calculate_spectrum_resolution(spectra, npoints, ppm)**  
+  Calcula resolução espectral ou converte entre pontos/ppm.
 
-- stocsy_by_region(): Variante do STOCSY que foca em regiões específicas
-  do espectro.
+------------------------------------------------------------------------
+
+### Análise Estatística Multivariada (ROPLS)
+
+- **extract_ropls_data(ropls_object, bins_roundPrecision,
+  VIP_roundPrecision)**  
+  Extrai scores e loadings de modelos PCA, PLS-DA ou OPLS-DA da ropls.
+
+- **Plot_scores(model, groups, comp, …)**  
+  Plota scores dos modelos multivariados.
+
+  ``` r
+  Plot_scores(model)
+  ```
+
+- **plot_scores_overview(PCA_object, …)**  
+  Gera múltiplos gráficos de scores para pares de componentes.
+
+- **Plot_loading(model, comp, …)**  
+  Plota os loadings (coeficientes de cada variável) para componentes
+  selecionados.
+
+  ``` r
+  Plot_loading(model)
+  ```
+
+- **Plot_loading2(model, comp, …)**  
+  Variante para quando variáveis não representam espectros contínuos.
+
+- **plot_loading_overview(PCA_object, …)**  
+  Cria gráficos de loading para múltiplos componentes.
+
+- **plot_loading_lines(model, comp, interactive, VIP_values_scale,
+  theme)**  
+  Gráficos de barras para loadings, coloridos por VIP quando aplicável.
+
+- **plot_slines(TrainingData, model, comp, interactive)**  
+  Plota S-lines (covariância/correlação) entre variáveis e scores, útil
+  para interpretar contribuição de variáveis nas análises.
+
+------------------------------------------------------------------------
+
+### Visualização Interativa de Espectros
+
+- **plot_interactive_spectra(Spectrum_data, plot_resolution,
+  limit_n_points, plot_only, Spectrum_window)**  
+  Gera gráficos interativos dos espectros de RMN.
+
+  ``` r
+  plot_interactive_spectra(Spectrum_data)
+  ```
+
+- **plot_spectra(Spectrum_data, plot_resolution, …)**  
+  Similar ao anterior, gera gráficos estáticos/flexíveis.
+
+- **overlaid_bins_plot(full_spectra, bin_data, bin_width, …)** Combina
+  visualização do espectro completo com intensidades de bins.
+
+- **plot_raster_spectrum(spec_data, plot_region, spec_resolution,
+  plot_resolution)** Cria um gráfico raster (imagem) dos espectros para
+  inspeção de padrões globais/anomalias.
+
+  ``` r
+  plot_raster_spectrum(spec_data)
+  ```
+
+------------------------------------------------------------------------
+
+### STOCSY (Statistical Total Correlation Spectroscopy)
+
+- **stocsy(spectra, driver_peak, mode, ref_spectrum)**  
+  Gera gráfico interativo STOCSY correlacionando o sinal de referência
+  com todos os demais.
+
+  ``` r
+  stocsy(spectra, driver_peak=0.945)
+  ```
+
+- **stocsy_by_region(spectra, driver_peak, mode, spectrum_resolution,
+  ref_spectrum)**  
+  Variante do STOCSY para regiões específicas do espectro.
+
+------------------------------------------------------------------------
+
+## Exemplos de Fluxo de Trabalho
+
+``` r
+# 1. Limpeza e Normalização
+cleaned <- CleanDataMatrix(raw_data)
+normed <- DataNormalization(cleaned, rowNorm="Quantile", scaleNorm="Autoscaling")
+
+# 2. Integração
+region <- data.frame(metabolito=c("Leucina"), ppm_i=c(0.94), ppm_f=c(0.97))
+integrals <- NMR_integration(Spectrum_data, region)
+
+# 3. Correção de Fase e Alinhamento
+phased <- autophase(spectra)
+aligned <- Spectra_align(phased)
+
+# 4. Visualização Interativa
+plot_interactive_spectra(aligned)
+plot_raster_spectrum(aligned, plot_region = c(0.5, 4))
+
+# 5. Análise Multivariada
+model <- ropls::opls(normed, Y, predI=2) # Modelo PLS-DA, por exemplo
+Plot_scores(model)
+Plot_loading(model)
+plot_slines(normed, model)
+```
+
+------------------------------------------------------------------------
+
+## Contribuições
+
+Contribuições são bem-vindas! Sinta-se livre para abrir issues e pull
+requests.
+
+## Licença
+
+<!-- Se houver uma licença, adicione aqui. Exemplo: -->
+
+Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE
+para detalhes.
+
+------------------------------------------------------------------------
+
+*Para suporte ou dúvidas técnicas, contate o mantenedor do pacote via
+GitHub.*
