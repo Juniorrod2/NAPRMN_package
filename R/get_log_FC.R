@@ -69,7 +69,7 @@ get_log_fc <- function(dataset,
     if (comparison == "a/b") {
       FC_data <- dplyr::mutate(
         FC_data,
-        FC = dplyr::across(colnames(FC_data)[3]) / dplyr::across(colnames(FC_data)[2]),
+        FC = unlist(dplyr::across(colnames(FC_data)[3]) / dplyr::across(colnames(FC_data)[2])),
         LogFC = log2(FC),
         Percentual_variation = (2^LogFC - 1) * 100
       )
@@ -77,7 +77,7 @@ get_log_fc <- function(dataset,
       if (comparison == "b/a") {
         FC_data <- dplyr::mutate(
           FC_data,
-          FC = dplyr::across(colnames(FC_data)[2]) / dplyr::across(colnames(FC_data)[3]),
+          FC = unlist(dplyr::across(colnames(FC_data)[2]) / dplyr::across(colnames(FC_data)[3])),
           LogFC = log2(FC),
           Percentual_variation = (2^LogFC - 1) * 100
         )
