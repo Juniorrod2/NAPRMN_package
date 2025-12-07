@@ -60,6 +60,7 @@ get_log_fc <- function(dataset,
                        grouping_variable,
                        comparison = "a/b") {
 
+  if(!is_grouped_df(dataset)) dataset <- group_by(dataset,!!x)
 
   if (dim(dplyr::distinct(dplyr::ungroup(dataset), dplyr::across(!!grouping_variable)))[1] == 2) {
     FC_data <- dplyr::group_by(dataset, dplyr::across(!!grouping_variable), .add = T) |>
