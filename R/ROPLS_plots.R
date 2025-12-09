@@ -596,7 +596,7 @@ plot_loading_lines <- function (model,
       loading_data) +
       ggplot2::aes(x=bins,
                    y=loadings) +
-      geom_col(fill="black")+
+      ggplot2::geom_col(fill="black")+
       ggplot2::labs(
         title = paste("Loadings (",
                       model@typeC,
@@ -610,7 +610,7 @@ plot_loading_lines <- function (model,
                         "%)")
         ),
         x = "Chemical shift (ppm)") +
-      ggplot2::scale_x_reverse() +
+      ggplot2::scale_x_reverse(breaks=seq(-0.5,12,0.5)) +
       ggplot2::theme_bw()
 
 
@@ -634,7 +634,7 @@ plot_loading_lines <- function (model,
       ggplot2::aes(x=bins,
                    y=loadings,
                    fill=Vip) +
-      geom_col()+
+      ggplot2::geom_col()+
       ggplot2::scale_fill_gradientn(
         colours = c("black","#ff0000"),
         values = VIP_values_scale) +
@@ -651,7 +651,7 @@ plot_loading_lines <- function (model,
                         "%)")
         ),
         x = "Chemical shift (ppm)") +
-      ggplot2::scale_x_reverse() +
+      ggplot2::scale_x_reverse(breaks=seq(-0.5,12,0.5)) +
       ggplot2::theme_bw()
 
 
@@ -676,7 +676,7 @@ plot_loading_lines <- function (model,
       ggplot2::aes(x=bins,
                    y=loadings,
                    fill=Vip) +
-      geom_col()+
+      ggplot2::geom_col()+
       ggplot2::scale_fill_gradientn(
         colours = c("black","#ff0000"),
         values = VIP_values_scale) +
@@ -695,7 +695,7 @@ plot_loading_lines <- function (model,
                         "%)")
         ),
         x = "Chemical shift (ppm)") +
-      ggplot2::scale_x_reverse() +
+      ggplot2::scale_x_reverse(breaks=seq(-0.5,12,0.5)) +
       ggplot2::theme_bw()
 
   }
