@@ -819,6 +819,8 @@ plot_slines <- function(TrainingData,model,comp=1,interactive=T){
 #' allowing interactive exploration of the S-line plot, or a `ggplot2`
 #' object when `interactive = FALSE`.
 #'
+#' @export
+#'
 #' @examples
 #' \dontrun{
 #' # Example usage:
