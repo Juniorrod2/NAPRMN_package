@@ -772,3 +772,100 @@ plot_slines <- function(TrainingData,model,comp=1,interactive=T){
     return(slines_plot)
   }
 }
+
+
+#' Plot S-Lines using lineplot (For full resolution spectra)
+#'
+#' Generates an S-line plot to visualize the covariance and correlation
+#' between variables in the training dataset and the scores of a selected
+#' component from a PCA, PLS(-DA), or OPLS(-DA) model.
+#'
+#'
+#' @param TrainingData A matrix or data frame containing the original data
+#' used for model training. Variables are represented as columns and samples
+#' as rows.
+#' @param model A PCA, PLS(-DA), or OPLS(-DA) model generated using the
+#' `ropls` package.
+#' @param comp A numeric value specifying the component to be analyzed.
+#' Default is `1`.
+#' @param interactive Logical. If `TRUE`, returns an interactive plot using
+#' `plotly`. If `FALSE`, returns a static `ggplot2` plot. Default is `TRUE`.
+#'
+#'@description
+#'
+#' Creates an S-line plot to visualize the contribution of variables to a
+#' selected component of a PCA, PLS(-DA), or OPLS(-DA) model. The function
+#' extracts the model scores using `extract_ropls_data()` and calculates the
+#' covariance and correlation between the original training data and the
+#' selected component scores.
+#'
+#' The x-axis represents the chemical shift (ppm), while the y-axis represents
+#' the covariance between the component scores and the variables
+#' (`Cov(Tp,X)`). The color of each S-line segment represents the mean absolute
+#' correlation (`|Cor(Tp,X)|`) between adjacent variables, with higher absolute
+#' correlations indicated by warmer colors.
+#'
+#' For PCA models, the first column of the extracted score data is excluded
+#' as metadata. For PLS(-DA) and OPLS(-DA) models, the first two columns are
+#' excluded before calculating covariance and correlation. This ensures that
+#' only the model score components are used in the S-line calculations.
+#'
+#' The chemical shift axis is displayed in reverse order, following the
+#' conventional representation of NMR spectra.
+#'
+#'
+#' @returns
+#'A plot object. Returns a `plotly` object when `interactive = TRUE`,
+#' allowing interactive exploration of the S-line plot, or a `ggplot2`
+#' object when `interactive = FALSE`.
+#'
+#' @examples
+#' \dontrun{
+#' # Example usage:
+#' TrainingData <- some_data_matrix  # Replace with your dataset
+#' model <- some_ropls_model         # Replace with a fitted ropls model
+#'
+#' # Generate an interactive S-line plot:
+#' plot_slines2(TrainingData, model, comp = 1, interactive = TRUE)
+#'
+#' # Generate a static ggplot2 S-line plot:
+#' plot_slines2(TrainingData, model, comp = 1, interactive = FALSE)
+#' }
+#'
+plot_slines2 <- function (TrainingData, model, comp = 1, interactive = T)
+{
+  PLS_data <- extract_ropls_data(model)
+  if (model@typeC == "PCA") {
+    metadataColuns = 1
+  }
+  else {
+    metadataColuns = c(1, 2)
+  }
+  cov_pls <- as.data.frame(cov(TrainingData, PLS_data$Scores[-metadataColuns]))
+  cor_pls <- as.data.frame(cor(TrainingData, PLS_data$Scores[-metadataColuns]))
+
+  slines_data <- data.frame(bins = as.numeric(rownames(cov_pls)),
+                            cor = cor_pls[, comp],
+                            cov = cov_pls[, comp])
+
+  slines_plot <- ggplot2::ggplot(slines_data) +
+    ggplot2::geom_hline(yintercept = 0) +
+    ggplot2::geom_segment(ggplot2::aes(bins,cov,xend=lead(bins),
+                                       yend=lead(cov),
+                                       color=(abs(cor)+lead(abs(cor)))/2)) +
+    ggplot2::scale_color_gradientn(colours = c("blue",
+                                               "green", "red"), values = c(0, 0.6, 1)) + ggplot2::theme_bw() +
+    ggplot2::scale_x_reverse(breaks = seq(-0.5, 12, 0.5)) +
+    ggplot2::labs(title = paste("Slines (", model@typeC,")", "-", "Comp", comp),
+                  y = "Cov(Tp,X)",
+                  x = "Chemical shift (ppm)",
+                  color = "Abs(Cor(Tp,X))")
+
+  if (interactive == T) {
+    return(plotly::ggplotly(slines_plot))
+  }
+  else {
+    return(slines_plot)
+  }
+}
+
